@@ -77,6 +77,18 @@ public class NetworkPlayerController : NetworkBehaviour
             playerNameText.enabled = false;
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+
+            controls.Player.Move.started += ctx => Move(ctx.ReadValue<Vector2>());
+            controls.Player.Move.performed += ctx => Move(ctx.ReadValue<Vector2>());
+            controls.Player.Move.canceled += ctx => moveDirection = Vector3.zero;
+
+            controls.Player.Jump.performed += ctx => CmdJump();
+
+            controls.Player.Pickup.performed += ctx => CheckPickup();
+
+            controls.Player.Drop.performed += ctx => Drop();
+
+            controls.Player.Serve.performed += ctx => ServeFood();
         }
     }
 
@@ -85,18 +97,6 @@ public class NetworkPlayerController : NetworkBehaviour
         enabled = true;
 
 
-
-        controls.Player.Move.started += ctx => Move(ctx.ReadValue<Vector2>());
-        controls.Player.Move.performed += ctx => Move(ctx.ReadValue<Vector2>());
-        controls.Player.Move.canceled += ctx => moveDirection = Vector3.zero;
-
-        controls.Player.Jump.performed += ctx => CmdJump();
-
-        controls.Player.Pickup.performed += ctx => CheckPickup();
-
-        controls.Player.Drop.performed += ctx => Drop();
-
-        controls.Player.Serve.performed += ctx => ServeFood();
 
         CheckForEnablePlayerComp();
     }

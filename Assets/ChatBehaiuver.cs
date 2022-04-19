@@ -12,6 +12,8 @@ public class ChatBehaiuver : NetworkBehaviour
 {
     public static ChatBehaiuver Instance { get; private set; }
 
+    public ChatManager chatManager;
+
     [SerializeField] private GameObject chatUI;
     public TMP_Text chatText;
     [SerializeField] private TMP_InputField inputField;
@@ -25,6 +27,8 @@ public class ChatBehaiuver : NetworkBehaviour
     {
         Instance = this;
 
+        chatManager = ChatManager.Instance;
+        Debug.Log(chatManager);
     }
 
 
@@ -47,7 +51,7 @@ public class ChatBehaiuver : NetworkBehaviour
     [Command(requiresAuthority =false)]
     private void CmdSendMessage(string message)
     {
-        RpcHandleMessage($"<color=yellow>[{SteamFriends.GetPersonaName()}] <color=white>{message}");
+        HandleMessage($"<color=yellow>[{SteamFriends.GetPersonaName()}] <color=white>{message}");
     }
 
     [Client]
@@ -63,9 +67,8 @@ public class ChatBehaiuver : NetworkBehaviour
         isTyping = false;
     }
 
-    [ClientRpc]
-    private void RpcHandleMessage(string message)
+    private void HandleMessage(string message)
     {
-        ChatManager.Instance.SendLobbyMsg($"\n{message}");
+        chatManager.RpcSendLobbyMsg($"\n{message}");
     }
 }

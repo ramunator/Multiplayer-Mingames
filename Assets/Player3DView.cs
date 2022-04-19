@@ -19,7 +19,6 @@ public class Player3DView : MonoBehaviour
 
     private void RotatePlayer(float dir)
     {
-        if(this.gameObject == null) { return; }
         if (Mouse.current.wasUpdatedThisFrame)
         {
             if (!Mouse.current.leftButton.isPressed) { return; }

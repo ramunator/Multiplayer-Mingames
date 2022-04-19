@@ -60,7 +60,7 @@ public class ChatManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void SendLobbyMsg(string msg)
+    public void RpcSendLobbyMsg(string msg)
     {
         Debug.Log(msg);
         newMsg = msg;
