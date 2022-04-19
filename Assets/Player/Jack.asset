@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a84f4b1e13fe514fb6a1fe152970751, type: 3}
+  m_Name: Jack
+  m_EditorClassIdentifier: 
+  name: Jack
+  age: 22
+  desc: Jack Jacky has a big macky
+  icon: {fileID: 21300000, guid: b4b0352578db68e47931e2f8a81ed985, type: 3}
+  playerObjectPf: {fileID: 4661692776596685149, guid: b80066b3c34b5e747bc2f0be835ecc38, type: 3}
