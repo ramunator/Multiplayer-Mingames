@@ -8,6 +8,7 @@ using Steamworks;
 public class MyNetworkManager : NetworkManager
 {
     [SerializeField] private playerObjectController GamePlayerPrefab;
+    [SerializeField] private ChatBehaiuver chatObject;
     public List<playerObjectController> GamePlayers { get; } = new List<playerObjectController>();
     [Scene] public List<string> maps = new List<string>();
 
@@ -15,13 +16,17 @@ public class MyNetworkManager : NetworkManager
     {
         if (SceneManager.GetActiveScene().name == "Lobby")
         {
+
             playerObjectController GamePlayerInstance = Instantiate(GamePlayerPrefab);
             
             GamePlayerInstance.connectionId = conn.connectionId;
             GamePlayerInstance.playerNumberId = GamePlayers.Count + 1;
             GamePlayerInstance.playerSteamId = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobbyManager.Instance.currentLobbyId, GamePlayers.Count);
 
-            NetworkServer.AddPlayerForConnection(conn, GamePlayerInstance.gameObject);   
+            NetworkServer.AddPlayerForConnection(conn, GamePlayerInstance.gameObject);
+            ChatBehaiuver chatInstance = Instantiate(chatObject);
+
+            NetworkServer.Spawn(chatInstance.gameObject);
         }
         if (SceneManager.GetActiveScene().name.StartsWith("Minimap_"))
         {
@@ -51,7 +56,7 @@ public class MyNetworkManager : NetworkManager
         Debug.Log("Chaning To Random Map");
         ServerChangeScene(GenerateRandomMap());
     }
-
+    
     public string GenerateRandomMap()
     {
         int randomMap = Random.Range(0, maps.Count);

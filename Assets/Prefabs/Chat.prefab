@@ -48,7 +48,7 @@ MonoBehaviour:
   sceneId: 0
   serverOnly: 0
   visible: 0
-  m_AssetId: 
+  m_AssetId: 8d4ce0a8829ab8d49af63299e9659d60
   hasSpawned: 0
 --- !u!114 &494898315504174127
 MonoBehaviour:
@@ -64,6 +64,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  chatManager: {fileID: 0}
   chatUI: {fileID: 3916692296928536935}
   chatText: {fileID: 3916692296928537003}
   inputField: {fileID: 3916692296928537002}

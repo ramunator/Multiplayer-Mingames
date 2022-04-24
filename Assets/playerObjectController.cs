@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using Steamworks;
+using UnityEngine.Animations.Rigging;
 
 public class playerObjectController : NetworkBehaviour
 {
@@ -11,6 +12,10 @@ public class playerObjectController : NetworkBehaviour
     [SyncVar] public ulong playerSteamId;
     [SyncVar(hook =nameof(PlayerNameUpdate))] public string playerName;
     [SyncVar(hook =nameof(PlayerReadyUpdate))] public bool ready;
+
+    public Transform rig;
+    public TwoBoneIKConstraint leftWeaponRig;
+    public TwoBoneIKConstraint rightWeaponRig;
 
     private MyNetworkManager networkManager;
 

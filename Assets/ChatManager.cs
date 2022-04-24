@@ -14,6 +14,7 @@ public class ChatManager : NetworkBehaviour
     protected Callback<LobbyChatMsg_t> LobbyChatMsg;
     protected Callback<LobbyCreated_t> lobbyCreated;
 
+
     string newMsg;
 
 
@@ -24,10 +25,10 @@ public class ChatManager : NetworkBehaviour
         WhateverReallyMessage
     }
 
+
+
     private void Awake()
     {
-        
-
         gameObject.SetActive(true);
         if (Instance == null) { Instance = this; }
         DontDestroyOnLoad(gameObject);
@@ -59,11 +60,8 @@ public class ChatManager : NetworkBehaviour
         lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
     }
 
-    [ClientRpc]
-    public void RpcSendLobbyMsg(string msg)
+    public void SendLobbyMsg(string msg)
     {
-        Debug.Log(msg);
-        newMsg = msg;
         SendChatMessage(msg, lobbyId);
     }
 

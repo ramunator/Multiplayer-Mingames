@@ -7,10 +7,11 @@ using System.Linq;
 using Mirror;
 using Cinemachine;
 using Steamworks;
+using StarterAssets;
 
 public class NetworkPlayerController : NetworkBehaviour 
 {
-    
+    public Gun gun;
 
     public InputMaster controls;
 
@@ -40,7 +41,26 @@ public class NetworkPlayerController : NetworkBehaviour
     float closestCustomer = 2;
     bool hasObjectInHand;
 
+    [Space]
+
+    public float CameraAngleOverride = 0.0f;
+
+    public GameObject CinemachineCameraTarget;
+
+    public float TopClamp = 70.0f;
+
+    public float BottomClamp = -30.0f;
+
+    private StarterAssetsInputs _input;
+
+    private const float _threshold = 0.01f;
+
+    private float _cinemachineTargetYaw;
+    private float _cinemachineTargetPitch;
+
     //GroundCheck
+
+    [Space]
     public float gravity = -9.81f;
     public LayerMask ground;
     public Transform groundCheck;
@@ -56,7 +76,9 @@ public class NetworkPlayerController : NetworkBehaviour
         rb = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
 
-        
+        _input = GetComponent<StarterAssetsInputs>();
+
+
 
         Application.targetFrameRate = 60;
     }
@@ -73,7 +95,7 @@ public class NetworkPlayerController : NetworkBehaviour
     {
         if (hasAuthority && SceneManager.GetActiveScene().name.StartsWith("Minimap_"))
         {
-            transform.Find("CM FreeLook1").GetComponent<CinemachineFreeLook>().enabled = true;
+            transform.Find("CM FreeLook1").GetComponent<CinemachineVirtualCamera>().enabled = true;
             playerNameText.enabled = false;
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
@@ -88,7 +110,13 @@ public class NetworkPlayerController : NetworkBehaviour
 
             controls.Player.Drop.performed += ctx => Drop();
 
+            controls.Player.Shoot.performed += ctx => CmdShoot();
+
             controls.Player.Serve.performed += ctx => ServeFood();
+
+            controls.Look.MouseLook.started += ctx => CameraRotation(ctx.ReadValue<Vector2>());
+            controls.Look.MouseLook.performed += ctx => CameraRotation(ctx.ReadValue<Vector2>());
+            controls.Look.MouseLook.canceled += ctx => CameraRotation(ctx.ReadValue<Vector2>());
         }
     }
 
@@ -132,6 +160,34 @@ public class NetworkPlayerController : NetworkBehaviour
         vel.y = Mathf.Sqrt(jumpVel * -2.0f * gravity);
     }
 
+    [Command()]
+    private void CmdShoot()
+    {
+        if(gun != null)
+        {
+            StartCoroutine(gun.Shoot());
+        }
+    }
+
+    private void CameraRotation(Vector2 dir)
+    {
+        Debug.Log(dir + " | " + dir.sqrMagnitude);
+
+        // if there is an input and camera position is not fixed
+        if (_input.look.sqrMagnitude >= _threshold)
+        {
+            _cinemachineTargetYaw += _input.look.x * Time.deltaTime;
+            _cinemachineTargetPitch += _input.look.y * Time.deltaTime;
+        }
+
+        // clamp our rotations so our values are limited 360 degrees
+        _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
+        _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
+
+        // Cinemachine will follow this target
+        CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);
+    }
+ 
     public IEnumerator Die()
     {
         AudioManager.instance.Play("PlayerDie");
@@ -142,6 +198,13 @@ public class NetworkPlayerController : NetworkBehaviour
 
         yield return new WaitForSeconds(.25f);
         Destroy(bloodParticleInstance);
+    }
+
+    private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
+    {
+        if (lfAngle < -360f) lfAngle += 360f;
+        if (lfAngle > 360f) lfAngle -= 360f;
+        return Mathf.Clamp(lfAngle, lfMin, lfMax);
     }
 
     [Client]
@@ -337,9 +400,9 @@ public class NetworkPlayerController : NetworkBehaviour
 
         if (hasAuthority && SceneManager.GetActiveScene().name.StartsWith("Minimap_"))
         {
-            if(playerMeshRenderer.transform.parent.gameObject.activeSelf == false)
+            if(playerMeshRenderer.transform.gameObject.activeSelf == false)
             {
-                playerMeshRenderer.transform.parent.gameObject.SetActive(true);
+                playerMeshRenderer.transform.gameObject.SetActive(true);
                 CheckForEnablePlayerComp();
             }
         }

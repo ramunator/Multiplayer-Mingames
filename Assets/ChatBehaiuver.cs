@@ -26,9 +26,6 @@ public class ChatBehaiuver : NetworkBehaviour
     private void Awake()
     {
         Instance = this;
-
-        chatManager = ChatManager.Instance;
-        Debug.Log(chatManager);
     }
 
 
@@ -48,27 +45,28 @@ public class ChatBehaiuver : NetworkBehaviour
     }
 
 
-    [Command(requiresAuthority =false)]
-    private void CmdSendMessage(string message)
+    private void SendMessageFunc(string message)
     {
-        HandleMessage($"<color=yellow>[{SteamFriends.GetPersonaName()}] <color=white>{message}");
+        Debug.LogError("Handling");
+
+        ChatManager.Instance.SendChatMessage($"\n<color=yellow>[{SteamFriends.GetPersonaName()}] <color=white>{message}", ChatManager.Instance.lobbyId);
     }
 
-    [Client]
     public void Send(string message)
     {
         if (!Keyboard.current.enterKey.wasPressedThisFrame) { return; }
 
         if (string.IsNullOrWhiteSpace(message)) { return; }
 
-        CmdSendMessage(message);
+        Debug.LogError("Starting");
+
+        SendMessageFunc(message);
 
         inputField.text = string.Empty;
-        isTyping = false;
     }
 
     private void HandleMessage(string message)
     {
-        chatManager.RpcSendLobbyMsg($"\n{message}");
+        Debug.LogError("Sending");
     }
 }
