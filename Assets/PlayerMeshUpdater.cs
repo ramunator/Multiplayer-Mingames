@@ -11,8 +11,8 @@ public class PlayerMeshUpdater : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        skinnedMeshRenderer.sharedMesh = playerMesh[PlayerPrefs.GetInt("PlayerId")];
-        skinnedMeshRenderer.material = playerMats[PlayerPrefs.GetInt("PlayerMatId")];
+        skinnedMeshRenderer.sharedMesh = playerMesh[PlayerManger.PlayerId];
+        skinnedMeshRenderer.material = playerMats[PlayerManger.playerMatID];
     }
 
     // Update is called once per frame

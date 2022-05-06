@@ -28,9 +28,7 @@ public class CharacterSlot : MonoBehaviour
         transform.Find("PlayerName").GetComponent<TMP_Text>().text = playerSo.name;
         transform.Find("Icon").GetComponent<Image>().sprite = playerSo.icon;
 
-        //string json = JsonUtility.ToJson(SaveSystemJson.Instance.playerData);
-        //PlayerData loadedPlayerData = JsonUtility.FromJson<PlayerData>(json);
-        //Debug.Log(loadedPlayerData.playerId);
+       
     }
 
 
@@ -40,12 +38,10 @@ public class CharacterSlot : MonoBehaviour
 
         PlayerManger.PlayerId = playerId;
         player.playerMesh.sharedMesh = playerSo.playerObjectPf;
-        PlayerPrefs.SetInt("PlayerId", PlayerManger.PlayerId);
-        Debug.Log("Test | " + player.playerMesh.sharedMesh);
 
         player.currentPlayer = playerSo;
 
-        SaveSystemJson.UpdatePlayerData();
+        SaveSystemJson.SavePlayerData();
     }
 
     public void BuyPlayer()

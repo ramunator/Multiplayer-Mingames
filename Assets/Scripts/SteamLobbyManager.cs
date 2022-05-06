@@ -4,6 +4,7 @@ using UnityEngine;
 using Mirror;
 using Steamworks;
 using System;
+using System.IO;
 
 public class SteamLobbyManager : MonoBehaviour
 {
@@ -27,6 +28,20 @@ public class SteamLobbyManager : MonoBehaviour
     protected Callback<LobbyChatMsg_t> lobbyChatMsg;
 
     public List<CSteamID> lobbyIds = new List<CSteamID>();
+
+    private MyNetworkManager networkManager;
+
+    private MyNetworkManager NetworkManager
+    {
+        get
+        {
+            if (networkManager != null)
+            {
+                return networkManager;
+            }
+            return networkManager = MyNetworkManager.singleton as MyNetworkManager;
+        }
+    }
 
     private void Start()
     {
@@ -58,7 +73,7 @@ public class SteamLobbyManager : MonoBehaviour
             return;
         }
 
-        NetworkManager.singleton.StartHost();
+        NetworkManager.StartHost();
         Debug.Log("Started Game");
     }
 
@@ -75,12 +90,13 @@ public class SteamLobbyManager : MonoBehaviour
     private void OnLobbyCreated(LobbyCreated_t callback)
     {
         if(callback.m_eResult != EResult.k_EResultOK) { Debug.LogError("Lobby Failed"); return; }
-        NetworkManager.singleton.StartHost();
+        NetworkManager.StartHost();
 
         currentLobbyId = callback.m_ulSteamIDLobby;
 
         SteamMatchmaking.SetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), "HostAddress", SteamUser.GetSteamID().ToString());
         SteamMatchmaking.SetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), "name", lobbyName);
+
     }
 
     private void OnGameLobbyJoinRequested(GameLobbyJoinRequested_t callback)
@@ -98,8 +114,8 @@ public class SteamLobbyManager : MonoBehaviour
         string hostAddress = SteamMatchmaking.GetLobbyData(
             new CSteamID(callback.m_ulSteamIDLobby),
             "HostAddress");
-        NetworkManager.singleton.networkAddress = hostAddress;
-        NetworkManager.singleton.StartClient();
+        NetworkManager.networkAddress = hostAddress;
+        NetworkManager.StartClient();
     }
 
     public void JoinLobby(CSteamID lobbyId)

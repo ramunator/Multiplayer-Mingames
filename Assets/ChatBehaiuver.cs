@@ -20,20 +20,56 @@ public class ChatBehaiuver : NetworkBehaviour
 
     bool isTyping = false;
 
+    public ulong lobbyId;
+
+    protected Callback<LobbyEnter_t> lobbyEntered;
+    protected Callback<LobbyChatMsg_t> LobbyChatMsg;
+    protected Callback<LobbyCreated_t> lobbyCreated;
+
+
+    string newMsg;
+
+
+    public enum MessageTypeEnum
+    {
+        ChatMessage,
+        ServerMessage,
+        WhateverReallyMessage
+    }
+
 
     public static event Action<string> OnMessage;
 
     private void Awake()
     {
         Instance = this;
+
+        
     }
 
+    public bool SendChatMessage(string Message, CSteamID ID)
+    {
+        //MessageTypeEnum messageType = MessageTypeEnum.ChatMessage;
+        byte[] message = new byte[1024];
+        message = System.Text.Encoding.ASCII.GetBytes(Message);
+        return SteamMatchmaking.SendLobbyChatMsg(ID, message, message.Length);
+    }
+
+    private void OnLobbyChatMsg(LobbyChatMsg_t callback)
+    {
+        byte[] Data = new byte[4096];
+        int ret = SteamMatchmaking.GetLobbyChatEntry((CSteamID)callback.m_ulSteamIDLobby, (int)callback.m_iChatID, out var SteamIDUser, Data, Data.Length, out var ChatEntryType);
+
+        string data = System.Text.Encoding.Default.GetString(Data);
+        Debug.Log(ret + " | " + data);
+        ChatBehaiuver.Instance.chatText.text = $"{data}";
+    }
 
     private void Update()
     {
-        if (Keyboard.current.enterKey.wasPressedThisFrame)
+        if (Keyboard.current.enterKey.wasPressedThisFrame && inputField.isFocused)
         {
-            inputField.gameObject.SetActive(true);
+            Send(inputField.text);
         }
     }
 
@@ -44,29 +80,28 @@ public class ChatBehaiuver : NetworkBehaviour
         
     }
 
+    // Start is called before the first frame update
+    void Start()
+    {
+        LobbyChatMsg = Callback<LobbyChatMsg_t>.Create(OnLobbyChatMsg);
+    }
+
+    public void SendLobbyMsg(string msg)
+    {
+        SendChatMessage(msg, (CSteamID)lobbyId);
+    }
 
     private void SendMessageFunc(string message)
     {
-        Debug.LogError("Handling");
-
-        ChatManager.Instance.SendChatMessage($"\n<color=yellow>[{SteamFriends.GetPersonaName()}] <color=white>{message}", ChatManager.Instance.lobbyId);
+        SendChatMessage($"\n<color=yellow>[{SteamFriends.GetPersonaName()}] <color=white>{message}", (CSteamID)lobbyId);
     }
 
     public void Send(string message)
     {
-        if (!Keyboard.current.enterKey.wasPressedThisFrame) { return; }
-
         if (string.IsNullOrWhiteSpace(message)) { return; }
-
-        Debug.LogError("Starting");
 
         SendMessageFunc(message);
 
         inputField.text = string.Empty;
-    }
-
-    private void HandleMessage(string message)
-    {
-        Debug.LogError("Sending");
     }
 }

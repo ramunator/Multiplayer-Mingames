@@ -8,12 +8,15 @@ using Mirror;
 using Cinemachine;
 using Steamworks;
 using StarterAssets;
+using UnityEngine.InputSystem.Users;
+using UnityEngine.InputSystem.Utilities;
 
 public class NetworkPlayerController : NetworkBehaviour 
 {
     public Gun gun;
 
     public InputMaster controls;
+
 
     [SerializeField] private CharacterController controller;
     [SerializeField] private Transform cam;
@@ -41,7 +44,7 @@ public class NetworkPlayerController : NetworkBehaviour
     float closestCustomer = 2;
     bool hasObjectInHand;
 
-    [Space]
+    [Space(15)]
 
     public float CameraAngleOverride = 0.0f;
 
@@ -60,13 +63,18 @@ public class NetworkPlayerController : NetworkBehaviour
 
     //GroundCheck
 
-    [Space]
+    [Space(15)]
     public float gravity = -9.81f;
     public LayerMask ground;
     public Transform groundCheck;
     private Vector3 vel;
     private bool isGrounded;
 
+    public EXboxOrigin XBoxOrigin;
+    public InputHandle_t handles;
+    public InputDigitalActionHandle_t action;
+
+    public InputUser input_user_;
     // Start is called before the first frame update
     void Awake()
     {
@@ -88,9 +96,11 @@ public class NetworkPlayerController : NetworkBehaviour
         if (SteamManager.Initialized)
         {
             playerNameText.text = SteamFriends.GetPersonaName();
+
+            
         }
     }
-    
+
     public void CheckForEnablePlayerComp()
     {
         if (hasAuthority && SceneManager.GetActiveScene().name.StartsWith("Minimap_"))
@@ -106,18 +116,16 @@ public class NetworkPlayerController : NetworkBehaviour
 
             controls.Player.Jump.performed += ctx => CmdJump();
 
-            controls.Player.Pickup.performed += ctx => CheckPickup();
-
-            controls.Player.Drop.performed += ctx => Drop();
-
             controls.Player.Shoot.performed += ctx => CmdShoot();
 
-            controls.Player.Serve.performed += ctx => ServeFood();
-
-            controls.Look.MouseLook.started += ctx => CameraRotation(ctx.ReadValue<Vector2>());
-            controls.Look.MouseLook.performed += ctx => CameraRotation(ctx.ReadValue<Vector2>());
-            controls.Look.MouseLook.canceled += ctx => CameraRotation(ctx.ReadValue<Vector2>());
         }
+    }
+
+    public void Test(EXboxOrigin origin)
+    {
+        Debug.Log(SteamInput.GetDigitalActionData(handles, action).bState);
+        InputActionSetHandle_t setHandle = SteamInput.GetActionSetHandle("Move");
+        Debug.Log(setHandle);
     }
 
     public override void OnStartAuthority()
@@ -127,6 +135,14 @@ public class NetworkPlayerController : NetworkBehaviour
 
 
         CheckForEnablePlayerComp();
+    }
+    
+    private void LateUpdate()
+    {
+        CameraRotation();
+
+
+        Test(XBoxOrigin);
     }
 
     [ClientCallback]
@@ -169,9 +185,8 @@ public class NetworkPlayerController : NetworkBehaviour
         }
     }
 
-    private void CameraRotation(Vector2 dir)
+    private void CameraRotation()
     {
-        Debug.Log(dir + " | " + dir.sqrMagnitude);
 
         // if there is an input and camera position is not fixed
         if (_input.look.sqrMagnitude >= _threshold)
@@ -245,7 +260,7 @@ public class NetworkPlayerController : NetworkBehaviour
 
     private void CheckPickup()
     {
-        Collider[] colliders = Physics.OverlapSphere(hand.transform.position, .8f, pickupLayer);    
+        Collider[] colliders = Physics.OverlapSphere(hand.transform.position, .95f, pickupLayer);    
 
         if(colliders.Length <= 0 || Inventory != null) { return; }
 
@@ -361,7 +376,7 @@ public class NetworkPlayerController : NetworkBehaviour
             anim.SetBool("Running", true);
             controller.Move(moveDir.normalized * speed * Time.deltaTime);
 
-            if (walkSFXDelay > Random.Range(.15f, .3f))
+            if (walkSFXDelay > Random.Range(.2f, .4f) && isGrounded)
             {
                 AudioManager.instance.Play("PlayerWalk");
                 walkSFXDelay = 0;
@@ -424,7 +439,7 @@ public class NetworkPlayerController : NetworkBehaviour
             CmdSyncPosRot(transform.localPosition, transform.localRotation);
         }
 
-        isGrounded = Physics.CheckSphere(groundCheck.position, .4f, ground);
+        isGrounded = Physics.CheckSphere(groundCheck.position, .25f, ground);
 
         if (isGrounded && vel.y < 0)
         {

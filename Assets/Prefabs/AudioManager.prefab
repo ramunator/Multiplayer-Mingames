@@ -43,7 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4485f349d550c094f9931d984d5b6266, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mixerGroup: {fileID: 0}
+  mixerGroup: {fileID: 24300002, guid: d8cd9050e35b933439763e841d7c5e47, type: 2}
   sounds:
   - name: PlayerWalk
     clip: {fileID: 8300000, guid: 83a259fbe2d49d8499d1216d60b80fa1, type: 3}
@@ -65,10 +65,28 @@ MonoBehaviour:
     source: {fileID: 0}
   - name: Lava
     clip: {fileID: 8300000, guid: cfb4ca4364266ca419d4f662ad31ac3d, type: 3}
-    volume: 0.5
+    volume: 0.2
     volumeVariance: 0.5
     pitch: 2
     pitchVariance: 0
     loop: 1
+    mixerGroup: {fileID: 0}
+    source: {fileID: 0}
+  - name: PlayerDie
+    clip: {fileID: 8300000, guid: 307a3ed2457d11d4c8cb8544c269a9a0, type: 3}
+    volume: 1
+    volumeVariance: 0.5
+    pitch: 2
+    pitchVariance: 0
+    loop: 0
+    mixerGroup: {fileID: 0}
+    source: {fileID: 0}
+  - name: LaserBullet
+    clip: {fileID: 8300000, guid: 0cc8d6fa5f6166e449083cd15beebd7d, type: 3}
+    volume: 1
+    volumeVariance: 0.5
+    pitch: 2
+    pitchVariance: 0
+    loop: 0
     mixerGroup: {fileID: 0}
     source: {fileID: 0}

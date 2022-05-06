@@ -76,9 +76,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 494898315504174121}
     m_Modifications:
     - target: {fileID: 3496158360153689608, guid: 83c0e10f94e40b24886b76e225887692, type: 3}
+      propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3496158360153689608, guid: 83c0e10f94e40b24886b76e225887692, type: 3}
       propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 494898315504174127}
+    - target: {fileID: 3496158360153689608, guid: 83c0e10f94e40b24886b76e225887692, type: 3}
+      propertyPath: m_OnEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3496158360153689709, guid: 83c0e10f94e40b24886b76e225887692, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

@@ -14,7 +14,6 @@ public class Player3DView : MonoBehaviour
     {
         controls = new InputMaster();
         controls.Enable();
-        controls.Player3DView.RotatePlayer.performed += ctx => RotatePlayer(ctx.ReadValue<float>());
     }
 
     private void RotatePlayer(float dir)

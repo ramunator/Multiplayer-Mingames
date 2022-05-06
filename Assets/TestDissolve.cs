@@ -1,39 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class TestDissolve : MonoBehaviour
+public class TestDissolve : NetworkBehaviour
 {
-    Material mat;
-    public float fade = 0f;
+    public Material dissolveMat;
+    public float fade = 1f;
 
     bool isDessolving = false;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        mat = GetComponent<MeshRenderer>().material;
-    }
 
     // Update is called once per frame
     void Update()
     {
         if (isDessolving)
         {
-            fade += Time.deltaTime;
+            fade -= Time.deltaTime;
 
-            if(fade >= 1f)
+            if(fade <= 0f)
             {
-                fade = 1f;
+                fade = 0f;
                 isDessolving = false;
+                Destroy(gameObject);
             }
 
-            mat.SetFloat("_Dissolve", fade);    
+            GetComponent<SkinnedMeshRenderer>().material.SetFloat("_Progress", fade);    
         }
     }
 
-    public void Die()
+    [Command(requiresAuthority =false)]
+    public void CmdDie()
     {
+        gameObject.GetComponent<SkinnedMeshRenderer>().material = dissolveMat;
         isDessolving = true;
         Debug.Log(isDessolving);
     }

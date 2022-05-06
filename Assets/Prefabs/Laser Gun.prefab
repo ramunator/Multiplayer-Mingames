@@ -208,7 +208,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 192
   laserBulletLine: {fileID: 8376859748130174964, guid: f1fc033084818e1478f8abee9e8c196c, type: 3}
   firePoint: {fileID: 112270337564987638}
   rightGrip: {fileID: 6265805512574356798}

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Mirror;
 using Steamworks;
+using System.IO;
 
 public class MyNetworkManager : NetworkManager
 {
@@ -16,6 +17,7 @@ public class MyNetworkManager : NetworkManager
     {
         if (SceneManager.GetActiveScene().name == "Lobby")
         {
+            //Debug.Log(File.ReadAllText("C:/Programing/Unity/Projects/SythPolygonTest/WorldData.dat"));
 
             playerObjectController GamePlayerInstance = Instantiate(GamePlayerPrefab);
             
@@ -25,6 +27,8 @@ public class MyNetworkManager : NetworkManager
 
             NetworkServer.AddPlayerForConnection(conn, GamePlayerInstance.gameObject);
             ChatBehaiuver chatInstance = Instantiate(chatObject);
+
+            chatInstance.lobbyId = SteamLobbyManager.Instance.currentLobbyId;
 
             NetworkServer.Spawn(chatInstance.gameObject);
         }
@@ -37,6 +41,9 @@ public class MyNetworkManager : NetworkManager
             GamePlayerInstance.playerSteamId = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobbyManager.Instance.currentLobbyId, GamePlayers.Count);
 
             NetworkServer.AddPlayerForConnection(conn, GamePlayerInstance.gameObject);
+
+            PlayerSpawnManager.SearchForSpawns();
+            PlayerSpawnManager.PlayerSpawnPos(PlayerSpawnManager.SpawnState.Random, GamePlayerInstance.gameObject);
         }
         if (TabManager.Instance != null)
         {
@@ -55,6 +62,7 @@ public class MyNetworkManager : NetworkManager
 
         Debug.Log("Chaning To Random Map");
         ServerChangeScene(GenerateRandomMap());
+        PlayerSpawnManager.SearchForSpawns();
     }
     
     public string GenerateRandomMap()

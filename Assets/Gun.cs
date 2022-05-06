@@ -22,23 +22,21 @@ public class Gun : MonoBehaviour
             Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
             Debug.Log("Did Hit");
 
-            if(hit.collider.TryGetComponent<TestDissolve>(out TestDissolve testDissolve) && hit.collider.gameObject.GetComponent<NetworkIdentity>().hasAuthority == false)
+            LineRenderer laserBulletLineInstance = Instantiate(laserBulletLine);
+
+            laserBulletLineInstance.SetPosition(0, firePoint.position);
+            laserBulletLineInstance.SetPosition(1, hit.point);
+
+            AudioManager.instance.Play("LaserBullet");
+
+            if (hit.collider.TryGetComponent<TestDissolve>(out TestDissolve testDissolve) && hit.collider.gameObject.GetComponent<NetworkIdentity>().hasAuthority == false)
             {
-                LineRenderer laserBulletLineInstance = Instantiate(laserBulletLine);
-
-                laserBulletLineInstance.SetPosition(0, firePoint.position);
-                laserBulletLineInstance.SetPosition(1, hit.point);
-
-                AudioManager.instance.Play("LaserBullet");
-
-                testDissolve.Die();
-
-                yield return new WaitForSeconds(0.5f);
-
-                Destroy(laserBulletLineInstance);
+                testDissolve.CmdDie();
             }
 
-            Debug.Log(testDissolve);
+            yield return new WaitForSeconds(0.3f);
+
+            Destroy(laserBulletLineInstance.gameObject);
         }
     }
 }

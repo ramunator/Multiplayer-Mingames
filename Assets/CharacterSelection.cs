@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 public class CharacterSelection : MonoBehaviour
 {
     private SelectPlayer player;
+    public PlayerSO currentPlayer;
 
     public List<Material> playerMats  = new List<Material>();
 
@@ -13,13 +14,15 @@ public class CharacterSelection : MonoBehaviour
     void Start()
     {
         player = transform.GetChild(0).GetChild(0).GetComponent<SelectPlayer>();
+        player.playerMesh.material = playerMats[PlayerManger.playerMatID];
     }
 
     public void SelectPlayerMat(int id)
     {   
         PlayerManger.playerMatID = id;
         player.playerMesh.material = playerMats[id];
-        PlayerPrefs.SetInt("PlayerMatId", PlayerManger.playerMatID);
+
+        SaveSystemJson.SavePlayerData();
     }
 
     public void SelectRightPlayerMat()
@@ -30,7 +33,7 @@ public class CharacterSelection : MonoBehaviour
         }
         SelectPlayerMat(PlayerManger.playerMatID + 1);
 
-        SaveSystemJson.UpdatePlayerData();
+        SaveSystemJson.SavePlayerData();
     }
 
     public void SelectLeftPlayerMat()
@@ -41,7 +44,7 @@ public class CharacterSelection : MonoBehaviour
         }
         SelectPlayerMat(PlayerManger.playerMatID - 1);
 
-        SaveSystemJson.UpdatePlayerData();
+        SaveSystemJson.SavePlayerData();
     }
 
     // Update is called once per frame

@@ -329,7 +329,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""MouseLook"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -581,44 +581,6 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
-        },
-        {
-            ""name"": ""Player3DView"",
-            ""id"": ""b77e625b-04dc-47db-81f2-e6b57d9ba155"",
-            ""actions"": [
-                {
-                    ""name"": ""RotatePlayer"",
-                    ""type"": ""Value"",
-                    ""id"": ""e0d140f8-ff76-411b-bfd6-aa200d87c0e3"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """"
-                }
-            ],
-            ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""d7a6f64a-c7e2-4598-a204-5eebfb1fb6c9"",
-                    ""path"": ""<Gamepad>/rightStick/x"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""RotatePlayer"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""cdecfcd0-d8e5-4678-bfd7-b6275356570e"",
-                    ""path"": ""<Mouse>/delta/x"",
-                    ""interactions"": """",
-                    ""processors"": ""Clamp(min=-1,max=1)"",
-                    ""groups"": ""Keyboard And Mouse"",
-                    ""action"": ""RotatePlayer"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                }
-            ]
         }
     ],
     ""controlSchemes"": [
@@ -670,9 +632,6 @@ public class @InputMaster : IInputActionCollection, IDisposable
         m_BuildMode_ZoomCam = m_BuildMode.FindAction("ZoomCam", throwIfNotFound: true);
         m_BuildMode_DestroyBuilding = m_BuildMode.FindAction("DestroyBuilding", throwIfNotFound: true);
         m_BuildMode_RotateCam = m_BuildMode.FindAction("RotateCam", throwIfNotFound: true);
-        // Player3DView
-        m_Player3DView = asset.FindActionMap("Player3DView", throwIfNotFound: true);
-        m_Player3DView_RotatePlayer = m_Player3DView.FindAction("RotatePlayer", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -897,39 +856,6 @@ public class @InputMaster : IInputActionCollection, IDisposable
         }
     }
     public BuildModeActions @BuildMode => new BuildModeActions(this);
-
-    // Player3DView
-    private readonly InputActionMap m_Player3DView;
-    private IPlayer3DViewActions m_Player3DViewActionsCallbackInterface;
-    private readonly InputAction m_Player3DView_RotatePlayer;
-    public struct Player3DViewActions
-    {
-        private @InputMaster m_Wrapper;
-        public Player3DViewActions(@InputMaster wrapper) { m_Wrapper = wrapper; }
-        public InputAction @RotatePlayer => m_Wrapper.m_Player3DView_RotatePlayer;
-        public InputActionMap Get() { return m_Wrapper.m_Player3DView; }
-        public void Enable() { Get().Enable(); }
-        public void Disable() { Get().Disable(); }
-        public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(Player3DViewActions set) { return set.Get(); }
-        public void SetCallbacks(IPlayer3DViewActions instance)
-        {
-            if (m_Wrapper.m_Player3DViewActionsCallbackInterface != null)
-            {
-                @RotatePlayer.started -= m_Wrapper.m_Player3DViewActionsCallbackInterface.OnRotatePlayer;
-                @RotatePlayer.performed -= m_Wrapper.m_Player3DViewActionsCallbackInterface.OnRotatePlayer;
-                @RotatePlayer.canceled -= m_Wrapper.m_Player3DViewActionsCallbackInterface.OnRotatePlayer;
-            }
-            m_Wrapper.m_Player3DViewActionsCallbackInterface = instance;
-            if (instance != null)
-            {
-                @RotatePlayer.started += instance.OnRotatePlayer;
-                @RotatePlayer.performed += instance.OnRotatePlayer;
-                @RotatePlayer.canceled += instance.OnRotatePlayer;
-            }
-        }
-    }
-    public Player3DViewActions @Player3DView => new Player3DViewActions(this);
     private int m_KeyboardAndMouseSchemeIndex = -1;
     public InputControlScheme KeyboardAndMouseScheme
     {
@@ -969,9 +895,5 @@ public class @InputMaster : IInputActionCollection, IDisposable
         void OnZoomCam(InputAction.CallbackContext context);
         void OnDestroyBuilding(InputAction.CallbackContext context);
         void OnRotateCam(InputAction.CallbackContext context);
-    }
-    public interface IPlayer3DViewActions
-    {
-        void OnRotatePlayer(InputAction.CallbackContext context);
     }
 }

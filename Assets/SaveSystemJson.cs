@@ -15,23 +15,17 @@ public class SaveSystemJson : MonoBehaviour
         {
             Instance = this;
         }
-    }
 
-    // Start is called before the first frame update
-    void Start()
-    {
         playerData = new PlayerData();
 
-        playerData.playerId = PlayerManger.PlayerId;
-        playerData.playerMatId = PlayerManger.playerMatID;
-
         string json = JsonUtility.ToJson(playerData);
-        Debug.Log(json);
 
-        File.WriteAllText(Application.dataPath + "/Json/saveFile.json", json);
+        LoadPlayerData();
     }
 
-    public static void UpdatePlayerData()
+    
+
+    public static void SavePlayerData()
     {
         Instance.playerData.playerId = PlayerManger.PlayerId;
         Instance.playerData.playerMatId = PlayerManger.playerMatID;
@@ -39,7 +33,29 @@ public class SaveSystemJson : MonoBehaviour
         string json = JsonUtility.ToJson(Instance.playerData);
         Debug.Log(json);
 
+        if (!File.Exists(Application.dataPath + "/Json/saveFile.json"))
+        {
+            File.Open(Application.dataPath + "/Json/saveFile.json", FileMode.Create);
+        }
+
         File.WriteAllText(Application.dataPath + "/Json/saveFile.json", json);
+    }
+
+    public static void LoadPlayerData()
+    {
+        if(File.Exists(Application.dataPath + "/Json/saveFile.json"))
+        {
+            string saveString = File.ReadAllText(Application.dataPath + "/Json/saveFile.json");
+            PlayerData playerData = JsonUtility.FromJson<PlayerData>(saveString);
+
+            PlayerManger.PlayerId = playerData.playerId;
+            PlayerManger.playerMatID = playerData.playerMatId;
+            Debug.Log(saveString);
+        }
+        else
+        {
+            File.Open(Application.dataPath + "/Json/saveFile.json", FileMode.Create);
+        }
     }
 }
 public class PlayerData
@@ -47,5 +63,3 @@ public class PlayerData
     public int playerId;
     public int playerMatId;
 }
-
-

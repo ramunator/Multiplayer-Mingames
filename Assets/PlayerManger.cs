@@ -11,9 +11,6 @@ public class PlayerManger : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playerMatID = PlayerPrefs.GetInt("PlayerMatId");
-        PlayerId = PlayerPrefs.GetInt("PlayerId");
-
         if (FindObjectOfType<PlayerController>())
         {
             player = FindObjectOfType<PlayerController>();
