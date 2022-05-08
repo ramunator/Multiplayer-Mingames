@@ -248,16 +248,6 @@ public class NetworkPlayerController : NetworkBehaviour
         playerMeshRenderer.material = playerMaterials[newIndex];
     }
 
-    [Command]
-    void CmdChangePlayerMaterial()
-    {
-        currentMatIndex += 1;
-        if (currentMatIndex >= playerMaterials.Count - 1)
-        {
-            currentMatIndex = 0;
-        }
-    }
-
     private void CheckPickup()
     {
         Collider[] colliders = Physics.OverlapSphere(hand.transform.position, .95f, pickupLayer);    
@@ -359,11 +349,6 @@ public class NetworkPlayerController : NetworkBehaviour
     [ClientCallback]
     void FixedUpdate()
     {
-        if (Keyboard.current.tabKey.wasPressedThisFrame)
-        {
-            CmdChangePlayerMaterial();
-        }
-
         if (moveDirection.magnitude >= 0.1f)
         {
             cam = Camera.main.transform;

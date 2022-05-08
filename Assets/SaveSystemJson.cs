@@ -16,6 +16,8 @@ public class SaveSystemJson : MonoBehaviour
             Instance = this;
         }
 
+        Directory.CreateDirectory(Application.dataPath + "/Json");
+
         playerData = new PlayerData();
 
         string json = JsonUtility.ToJson(playerData);
@@ -35,7 +37,7 @@ public class SaveSystemJson : MonoBehaviour
 
         if (!File.Exists(Application.dataPath + "/Json/saveFile.json"))
         {
-            File.Open(Application.dataPath + "/Json/saveFile.json", FileMode.Create);
+            File.Open(Application.dataPath + "/Json/saveFile.json", FileMode.OpenOrCreate);
         }
 
         File.WriteAllText(Application.dataPath + "/Json/saveFile.json", json);
@@ -54,7 +56,7 @@ public class SaveSystemJson : MonoBehaviour
         }
         else
         {
-            File.Open(Application.dataPath + "/Json/saveFile.json", FileMode.Create);
+            File.Open(Application.dataPath + "/Json/saveFile.json", FileMode.OpenOrCreate);
         }
     }
 }
