@@ -8,6 +8,8 @@ public class LaserGame : NetworkBehaviour
 {
     public Gun laserGun;
 
+    public Holdable laserGunHoldable;
+
     private MyNetworkManager networkManager;
 
     private MyNetworkManager NetworkManager
@@ -31,14 +33,20 @@ public class LaserGame : NetworkBehaviour
         }
     }
 
-        public void GiveAllPlayersLaserGun()
+    public void GiveAllPlayersLaserGun()
+    {
+        foreach (playerObjectController player in NetworkManager.GamePlayers)
         {
-            foreach(playerObjectController player in NetworkManager.GamePlayers)
-            {
-                player.rig.gameObject.SetActive(true);
-                player.GetComponent<NetworkPlayerController>().gun = player.rig.GetChild(0).GetComponent<Gun>();
-            }
+            player.GetComponent<NetworkPlayerController>().currentHoldableItem = laserGunHoldable;
+
+            player.gun.holdable = laserGunHoldable;
+
+            player.leftHandRig.weight = 1;
+            player.rightHandRig.weight = 1;
+
+            player.gun.UpdateHoldable();
         }
+    }
 
     // Update is called once per frame
     void Update()

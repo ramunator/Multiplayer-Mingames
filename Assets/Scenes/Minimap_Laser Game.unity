@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3969,6 +3969,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   laserGun: {fileID: 8460966167060564518, guid: c5e8a26dbbf4d944593ef289c6d911d1, type: 3}
+  laserGunHoldable: {fileID: 11400000, guid: 0dc7217ea0feafb4a8d79e39b38b059c, type: 2}
 --- !u!4 &799609962
 Transform:
   m_ObjectHideFlags: 0

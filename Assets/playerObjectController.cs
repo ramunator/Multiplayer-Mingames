@@ -13,9 +13,10 @@ public class playerObjectController : NetworkBehaviour
     [SyncVar(hook =nameof(PlayerNameUpdate))] public string playerName;
     [SyncVar(hook =nameof(PlayerReadyUpdate))] public bool ready;
 
+    public Gun gun;
     public Transform rig;
-    public TwoBoneIKConstraint leftWeaponRig;
-    public TwoBoneIKConstraint rightWeaponRig;
+    public TwoBoneIKConstraint leftHandRig;
+    public TwoBoneIKConstraint rightHandRig;
 
     private MyNetworkManager networkManager;
 

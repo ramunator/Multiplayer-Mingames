@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8376859748130174965}
   - component: {fileID: 8376859748130174964}
+  - component: {fileID: -7154845289835825655}
   m_Layer: 0
   m_Name: LaserBullet
   m_TagString: Untagged
@@ -129,3 +130,20 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
+--- !u!114 &-7154845289835825655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8376859748130174963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  visible: 0
+  m_AssetId: f1fc033084818e1478f8abee9e8c196c
+  hasSpawned: 0

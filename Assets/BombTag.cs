@@ -5,11 +5,15 @@ using UnityEngine;
 
 public class BombTag : NetworkBehaviour
 {
+    public GameObject explosionParticle;
+
+    public bool killPlayer;
+
     public playerObjectController playerWithBomb;
 
     public float playerWithBombTime = 0;
 
-    public Bomb bomb;
+    public Holdable bombHoldable;
 
     private MyNetworkManager networkManager;
 
@@ -36,8 +40,27 @@ public class BombTag : NetworkBehaviour
 
     public void GetNewPlayerTheBomb()
     {
-        playerWithBomb = NetworkManager.GamePlayers[Random.Range(0, NetworkManager.GamePlayers.Count)];
-        Debug.Log(playerWithBomb);
+        foreach(playerObjectController playerObjectController in NetworkManager.GamePlayers)
+        {
+            playerObjectController.leftHandRig.weight = 0;
+            playerObjectController.rightHandRig.weight = 0;
+
+            playerObjectController.gun.GetComponent<MeshFilter>().mesh = null;
+        }
+
+        playerObjectController player = NetworkManager.GamePlayers[Random.Range(0, NetworkManager.GamePlayers.Count)];
+
+        playerWithBomb = player;
+
+        player.GetComponent<NetworkPlayerController>().currentHoldableItem = bombHoldable;
+        player.gun.holdable = bombHoldable;
+
+        player.leftHandRig.weight = 1;
+        player.rightHandRig.weight = 1;
+
+        player.gun.UpdateHoldable();
+
+        player.gun.GetComponent<MeshFilter>().mesh = bombHoldable.itemMesh;
     }
 
     // Update is called once per frame
@@ -45,12 +68,25 @@ public class BombTag : NetworkBehaviour
     {
         playerWithBombTime += Time.deltaTime;
 
-        if(playerWithBombTime > 15)
+        if(playerWithBombTime > 22.5f)
         {
-            Debug.Log($"BOOOMM {playerWithBomb.playerName} IS DEAD");
-            playerWithBombTime = 0;
-            bomb.Explode();
-            GetNewPlayerTheBomb();
+            KillPlayerWithBomb();
         }
+    }
+
+    private void KillPlayerWithBomb()
+    {
+        Instantiate(explosionParticle, playerWithBomb.transform.position, Quaternion.identity);
+
+        playerWithBombTime = 0;
+
+        ChatBehaiuver.Instance.Send($"BOOOMM <color=red>[{playerWithBomb.playerName}]<color=white> IS DEAD", ChatBehaiuver.MessageTypeEnum.ServerMessage);
+
+        if (killPlayer)
+        {
+            playerWithBomb.gameObject.SetActive(false);
+        }
+
+        GetNewPlayerTheBomb();
     }
 }

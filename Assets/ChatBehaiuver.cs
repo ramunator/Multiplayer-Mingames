@@ -44,7 +44,7 @@ public class ChatBehaiuver : NetworkBehaviour
     {
         Instance = this;
 
-        
+        DontDestroyOnLoad(gameObject);
     }
 
     public bool SendChatMessage(string Message, CSteamID ID)
@@ -69,7 +69,7 @@ public class ChatBehaiuver : NetworkBehaviour
     {
         if (Keyboard.current.enterKey.wasPressedThisFrame && inputField.isFocused)
         {
-            Send(inputField.text);
+            Send(inputField.text, MessageTypeEnum.ChatMessage);
         }
     }
 
@@ -91,16 +91,29 @@ public class ChatBehaiuver : NetworkBehaviour
         SendChatMessage(msg, (CSteamID)lobbyId);
     }
 
-    private void SendMessageFunc(string message)
+    private void SendChatMessageFunc(string message)
     {
         SendChatMessage($"\n<color=yellow>[{SteamFriends.GetPersonaName()}] <color=white>{message}", (CSteamID)lobbyId);
     }
 
-    public void Send(string message)
+    private void SendServerMessageFunc(string message)
+    {
+        SendChatMessage($"{message}", (CSteamID)lobbyId);
+    }
+
+    public void Send(string message, MessageTypeEnum messageType)
     {
         if (string.IsNullOrWhiteSpace(message)) { return; }
 
-        SendMessageFunc(message);
+        if(messageType == MessageTypeEnum.ChatMessage)
+        {
+            SendChatMessageFunc(message);
+        }
+        else if(messageType == MessageTypeEnum.ServerMessage)
+        {
+            SendServerMessageFunc(message);
+        }
+
 
         inputField.text = string.Empty;
     }

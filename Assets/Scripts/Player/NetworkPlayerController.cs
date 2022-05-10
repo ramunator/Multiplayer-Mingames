@@ -10,10 +10,11 @@ using Steamworks;
 using StarterAssets;
 using UnityEngine.InputSystem.Users;
 using UnityEngine.InputSystem.Utilities;
+using EZCameraShake;
 
 public class NetworkPlayerController : NetworkBehaviour 
 {
-    public Gun gun;
+    public Holdable currentHoldableItem;
 
     public InputMaster controls;
 
@@ -117,15 +118,14 @@ public class NetworkPlayerController : NetworkBehaviour
             controls.Player.Jump.performed += ctx => CmdJump();
 
             controls.Player.Shoot.performed += ctx => CmdShoot();
-
         }
     }
 
     public void Test(EXboxOrigin origin)
     {
-        Debug.Log(SteamInput.GetDigitalActionData(handles, action).bState);
+        //Debug.Log(SteamInput.GetDigitalActionData(handles, action).bState);
         InputActionSetHandle_t setHandle = SteamInput.GetActionSetHandle("Move");
-        Debug.Log(setHandle);
+        //Debug.Log(setHandle);
     }
 
     public override void OnStartAuthority()
@@ -179,6 +179,10 @@ public class NetworkPlayerController : NetworkBehaviour
     [Command()]
     private void CmdShoot()
     {
+        if(currentHoldableItem.type != Holdable.Type.Gun) { return; }
+
+        if(!GetComponent<playerObjectController>().gun.TryGetComponent<Gun>(out Gun gun)) { return; }
+
         if(gun != null)
         {
             StartCoroutine(gun.Shoot());
@@ -210,6 +214,8 @@ public class NetworkPlayerController : NetworkBehaviour
         bloodParticleInstance.transform.position = transform.Find("Root Transform").position;
         NetworkServer.Destroy(this.gameObject);
         Destroy(this.gameObject);
+
+        CameraShaker.Instance.ShakeOnce(.4f, .4f, .1f, .75f);
 
         yield return new WaitForSeconds(.25f);
         Destroy(bloodParticleInstance);
