@@ -27,7 +27,6 @@ public class NetworkPlayerController : NetworkBehaviour
     [SerializeField] private List<Material> playerMaterials = new List<Material>();
     [SerializeField] private TMPro.TMP_Text playerNameText;
     [SerializeField] private ParticleSystem bloodParticle;
-    [SyncVar(hook =nameof(HandlePlayerIndexChanged))] [SerializeField] private int currentMatIndex = -1;
     public GameObject hand;
     [SerializeField] private LayerMask pickupLayer;
     public IPickup Inventory;
@@ -106,6 +105,9 @@ public class NetworkPlayerController : NetworkBehaviour
     {
         if (hasAuthority && SceneManager.GetActiveScene().name.StartsWith("Minimap_"))
         {
+            PlayerSpawnManager.SearchForSpawns();
+            PlayerSpawnManager.PlayerSpawnPos(PlayerSpawnManager.SpawnState.Random, gameObject);
+
             transform.Find("CM FreeLook1").GetComponent<CinemachineVirtualCamera>().enabled = true;
             playerNameText.enabled = false;
             Cursor.lockState = CursorLockMode.Locked;
@@ -179,13 +181,11 @@ public class NetworkPlayerController : NetworkBehaviour
     [Command()]
     private void CmdShoot()
     {
-        if(currentHoldableItem.type != Holdable.Type.Gun) { return; }
-
         if(!GetComponent<playerObjectController>().gun.TryGetComponent<Gun>(out Gun gun)) { return; }
 
         if(gun != null)
         {
-            StartCoroutine(gun.Shoot());
+            StartCoroutine(gun.Attack());
         }
     }
 

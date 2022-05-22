@@ -4,13 +4,8 @@ using UnityEngine;
 
 public class Bomb : MonoBehaviour
 {
-    public ParticleSystem explosion;
-
-    public void Explode()
+    public void Attack()
     {
-        GetComponent<MeshRenderer>().enabled = false;
-        explosion.Play();
-    }
 
-    
+    }
 }

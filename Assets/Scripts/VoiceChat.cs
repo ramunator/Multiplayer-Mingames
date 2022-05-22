@@ -23,7 +23,7 @@ public class VoiceChat : NetworkBehaviour
             SteamUser.StopVoiceRecording();
             VoiceManager.Instance.RemovePlayerVoiceGFX();
         }
-        else if (isLocalPlayer && Keyboard.current.vKey.isPressed)
+        if (isLocalPlayer && Keyboard.current.vKey.isPressed)
             SteamUser.StartVoiceRecording();
 
         if (isLocalPlayer)

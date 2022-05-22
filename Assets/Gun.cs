@@ -8,6 +8,7 @@ using UnityEditor;
 
 public class Gun : MonoBehaviour
 {
+    public playerObjectController player;
     public Holdable holdable;
 
     public InputMaster controls;
@@ -35,7 +36,7 @@ public class Gun : MonoBehaviour
         RightHandGrip = transform.GetChild(0).Find("Right_Hand_Grip");
         LeftHandGrip = transform.GetChild(0).Find("Left_Hand_Grip");
 
-        if (RightHandGrip && LeftHandGrip != null) { return; }
+        if (RightHandGrip && LeftHandGrip == null) { return; }
 
         GetComponent<MeshFilter>().sharedMesh = holdable.itemMesh;
 
@@ -44,51 +45,69 @@ public class Gun : MonoBehaviour
         LeftHandGrip.localRotation = Quaternion.Euler(holdable.LeftHandGripRot);
         RightHandGrip.localRotation = Quaternion.Euler(holdable.RightHandGripRot);
 
+        UpdateHoldable();
+
         Debug.Log(LeftHandGrip + " | " + RightHandGrip);
         Debug.Log(holdable.LeftHandGripPos + " | " + holdable.RightHandGripPos);
     }
 
-    public IEnumerator Shoot()
+    public IEnumerator BombAttack()
     {
-        RaycastHit hit;
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, 999f, playerLayer)) 
-        {  
-            Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
-            Debug.Log("Did Hit");
+        player.GetComponent<Animator>().SetTrigger("BombAttack");
+        player.leftHandRig.weight = 0;
 
-            LineRenderer laserBulletLineInstance = Instantiate(laserBulletLine);
+        Physics.CheckSphere(player.rightHandRig.transform.position, .5f, playerLayer);
 
-            laserBulletLineInstance.SetPosition(0, firePoint.position);
-            laserBulletLineInstance.SetPosition(1, hit.point);
+        
 
-            NetworkServer.Spawn(laserBulletLineInstance.gameObject);
+        yield return new WaitForSeconds(.3f);
 
-            AudioManager.instance.Play("LaserBullet");
 
-            if (hit.collider.TryGetComponent<TestDissolve>(out TestDissolve testDissolve) && hit.collider.gameObject.GetComponent<NetworkIdentity>().hasAuthority == false)
-            {
-                testDissolve.CmdDie();
-            }
 
-            yield return new WaitForSeconds(0.3f);
-
-            Destroy(laserBulletLineInstance.gameObject);
-        }
+        LeanTween.value(gameObject, 0, 1, .2f).setOnUpdate((float val) => { player.leftHandRig.weight = val; });
+        player.rightHandRig.weight = 1;
     }
-}
 
-[CustomEditor(typeof(Gun))]
-class GunEditor : Editor
-{
-    public override void OnInspectorGUI()
+    private void OnDrawGizmosSelected()
     {
-        base.OnInspectorGUI();
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(player.rightHandRig.transform.position, .5f);
+    }
 
-        Gun gun = (Gun)target;
+    public IEnumerator Attack()
+    {
 
-        if (GUILayout.Button("TestHoldable"))
+        if(holdable.type == Holdable.Type.Gun)
         {
-            gun.UpdateHoldable();
+            RaycastHit hit;
+            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, 999f, playerLayer))
+            {
+                Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+                Debug.Log("Did Hit");
+
+                LineRenderer laserBulletLineInstance = Instantiate(laserBulletLine);
+
+                laserBulletLineInstance.SetPosition(0, firePoint.position);
+                laserBulletLineInstance.SetPosition(1, hit.point);
+
+                NetworkServer.Spawn(laserBulletLineInstance.gameObject);
+
+                AudioManager.instance.Play("LaserBullet");
+
+                if (hit.collider.TryGetComponent<TestDissolve>(out TestDissolve testDissolve) && hit.collider.gameObject.GetComponent<NetworkIdentity>().hasAuthority == false)
+                {
+                    testDissolve.CmdDie();
+                }
+
+                yield return new WaitForSeconds(0.3f);
+
+                Destroy(laserBulletLineInstance.gameObject);
+            }
         }
+        else if(holdable.type == Holdable.Type.Bomb)
+        {
+            StartCoroutine(BombAttack());
+        }
+        
     }
 }

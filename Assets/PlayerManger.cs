@@ -4,18 +4,13 @@ using UnityEngine;
 
 public class PlayerManger : MonoBehaviour
 {
-    PlayerController player;
+    NetworkPlayerController player;
     public static int playerMatID;
     public static int PlayerId;
 
     // Start is called before the first frame update
     void Start()
     {
-        if (FindObjectOfType<PlayerController>())
-        {
-            player = FindObjectOfType<PlayerController>();
-        }
-        
         DontDestroyOnLoad(gameObject);
     }
 

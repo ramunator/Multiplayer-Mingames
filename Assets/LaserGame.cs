@@ -45,7 +45,12 @@ public class LaserGame : NetworkBehaviour
             player.rightHandRig.weight = 1;
 
             player.gun.UpdateHoldable();
+
+            player.gun.GetComponent<MeshFilter>().mesh = laserGunHoldable.itemMesh;
+
+            Debug.Log("Test");
         }
+
     }
 
     // Update is called once per frame

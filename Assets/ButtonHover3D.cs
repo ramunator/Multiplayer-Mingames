@@ -28,8 +28,6 @@ public class ButtonHover3D : MonoBehaviour
     [SerializeField] Vector3 lastSelectedScale = Vector3.one;
     [SerializeField] private Image defaultImage;
 
-    float lerp = 1;
-
     // Start is called before the first frame update
     void Start()
     {

@@ -80,7 +80,7 @@ public class BombTag : NetworkBehaviour
 
         playerWithBombTime = 0;
 
-        ChatBehaiuver.Instance.Send($"BOOOMM <color=red>[{playerWithBomb.playerName}]<color=white> IS DEAD", ChatBehaiuver.MessageTypeEnum.ServerMessage);
+        ChatBehaiuver.Instance.Send($"<color=white>BOOOMM <color=red>[{playerWithBomb.playerName}] IS DEAD", ChatBehaiuver.MessageTypeEnum.ServerMessage);
 
         if (killPlayer)
         {

@@ -5,7 +5,7 @@ using Mirror;
 
 public class HexagonHeat : NetworkBehaviour
 {
-    public GameObject currentColorBoard;
+    public Material currentColorBoard;
     
     public List<Hexagon> hexagons = new List<Hexagon>();
 
@@ -33,12 +33,19 @@ public class HexagonHeat : NetworkBehaviour
                 StartCoroutine(hexagons[i].RpcUseHexagon());
             }
         }
+
+        Invoke("SetCurrentColorToWhite", 4);
+    }
+
+    void SetCurrentColorToWhite()
+    {
+        CurrentColor = Color.white;
     }
 
     private void HandleNewColor(Color oldColor, Color newColor)
     {
         if (cachedMaterial == null)
-            cachedMaterial = currentColorBoard.GetComponent<MeshRenderer>().material;
+            cachedMaterial = currentColorBoard;
 
         cachedMaterial.color = newColor;
     }

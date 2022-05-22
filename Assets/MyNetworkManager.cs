@@ -19,6 +19,8 @@ public class MyNetworkManager : NetworkManager
         {
             //Debug.Log(File.ReadAllText("C:/Programing/Unity/Projects/SythPolygonTest/WorldData.dat"));
 
+            
+
             playerObjectController GamePlayerInstance = Instantiate(GamePlayerPrefab);
             
             GamePlayerInstance.connectionId = conn.connectionId;
@@ -43,10 +45,11 @@ public class MyNetworkManager : NetworkManager
             NetworkServer.AddPlayerForConnection(conn, GamePlayerInstance.gameObject);
 
             PlayerSpawnManager.SearchForSpawns();
-            PlayerSpawnManager.PlayerSpawnPos(PlayerSpawnManager.SpawnState.Random, GamePlayerInstance.gameObject);
         }
+
         if (TabManager.Instance != null)
         {
+            Debug.Log(TabManager.Instance);
             TabManager.Instance.AddPlayerTab();
         }
     }

@@ -18,8 +18,6 @@ public class ChatBehaiuver : NetworkBehaviour
     public TMP_Text chatText;
     [SerializeField] private TMP_InputField inputField;
 
-    bool isTyping = false;
-
     public ulong lobbyId;
 
     protected Callback<LobbyEnter_t> lobbyEntered;
@@ -36,9 +34,6 @@ public class ChatBehaiuver : NetworkBehaviour
         ServerMessage,
         WhateverReallyMessage
     }
-
-
-    public static event Action<string> OnMessage;
 
     private void Awake()
     {

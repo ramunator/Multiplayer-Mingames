@@ -12,7 +12,6 @@ public class GridBuildingSystem : MonoBehaviour
     public static GridBuildingSystem Instance { get; private set; }
 
     public event EventHandler OnSelectedChanged;
-    public event EventHandler OnObjectPlaced;
 
     public InputMaster controls;
 

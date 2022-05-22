@@ -95,7 +95,6 @@ public class CustomerObject : MonoBehaviour
     private void Sit()
     {
 
-        agent.Stop();
         rb.isKinematic = true;
         anim.SetBool("IsWalking", false);
         transform.position = new Vector3(0, transform.position.y, 0);

@@ -30,8 +30,6 @@ public class ButtonHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     [SerializeField] Vector3 lastSelectedScale = Vector3.one;
     [SerializeField] private Image defaultImage;
 
-    float lerp = 1;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -100,7 +98,6 @@ public class ButtonHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     public void AlphaChangeImage(float newAlpha)
     {
-        float vel = 10;
         Color imageColor = GetComponent<Image>().color;
         imageColor.a = newAlpha;
     }

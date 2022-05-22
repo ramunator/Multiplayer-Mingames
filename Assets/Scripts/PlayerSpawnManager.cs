@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class PlayerSpawnManager : NetworkBehaviour
+public class PlayerSpawnManager : MonoBehaviour
 {
     public enum SpawnState
     {
@@ -14,7 +14,7 @@ public class PlayerSpawnManager : NetworkBehaviour
     public static PlayerSpawnManager Instance { get; private set; }
 
     public List<PlayerNetworkSpawn> playerSpawns = new List<PlayerNetworkSpawn>();
-    [SyncVar] public int playersSpawned;
+    public int playersSpawned;
 
     private void Awake()
     {
@@ -42,14 +42,14 @@ public class PlayerSpawnManager : NetworkBehaviour
         Debug.Log("Settng Player Pos");
         if(spawnState == SpawnState.Random)
         {
-            player.transform.localPosition = Instance.playerSpawns[Random.Range(0, Instance.playerSpawns.Count)].spawn.localPosition;
-            Instance.playersSpawned += 1;
+            player.transform.position = Instance.playerSpawns[Random.Range(0, Instance.playerSpawns.Count)].spawn.position;
         }
         else if (spawnState == SpawnState.Order)
         {
-            player.transform.localPosition = Instance.playerSpawns[Instance.playersSpawned].spawn.localPosition;
-            Instance.playersSpawned += 1;
+            player.transform.position = Instance.playerSpawns[Instance.playersSpawned].spawn.position;
         }
+        Instance.playersSpawned += 1;
+        player.GetComponent<CharacterController>().enabled = true;
     }
 
 }
