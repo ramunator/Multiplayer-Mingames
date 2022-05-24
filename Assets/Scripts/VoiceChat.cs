@@ -26,7 +26,7 @@ public class VoiceChat : NetworkBehaviour
         if (isLocalPlayer && Keyboard.current.vKey.isPressed)
             SteamUser.StartVoiceRecording();
 
-        if (isLocalPlayer)
+        if (true)
         {
             uint Compressed;
             EVoiceResult ret = SteamUser.GetAvailableVoice(out Compressed);
