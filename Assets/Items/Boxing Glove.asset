@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2dc250c7b58a6f40b0f9d2f35d38ef2, type: 3}
+  m_Name: Boxing Glove
+  m_EditorClassIdentifier: 
+  type: 3
+  name: Boxing Glove
+  itemMesh: {fileID: 4300000, guid: a410315ac02bc904294ebe115825a9db, type: 3}
+  RightHandGripRot: {x: 190, y: 0, z: 0}
+  LeftHandGripRot: {x: 0, y: 0, z: 0}
+  RightHandGripPos: {x: 0.0614, y: 0.04, z: -0.01}
+  LeftHandGripPos: {x: 0, y: 0, z: 0}

@@ -21,6 +21,7 @@ public class NetworkPlayerController : NetworkBehaviour
 
     [SerializeField] private CharacterController controller;
     [SerializeField] private Transform cam;
+    public Transform popUpMenuInteraction;
     [SerializeField] private float speed;
     [SerializeField] private float turnSmoothTime = .1f;
     [SerializeField] private SkinnedMeshRenderer playerMeshRenderer;
@@ -256,18 +257,19 @@ public class NetworkPlayerController : NetworkBehaviour
 
     private void CheckPickup()
     {
-        Collider[] colliders = Physics.OverlapSphere(hand.transform.position, .95f, pickupLayer);    
+        Collider[] colliders = Physics.OverlapSphere(transform.position, 2f, pickupLayer);    
 
-        if(colliders.Length <= 0 || Inventory != null) { return; }
+        if(colliders.Length <= 0) { popUpMenuInteraction.gameObject.SetActive(false); return; }
 
-        if (colliders[0].TryGetComponent<IPickup>(out IPickup _pickup))
+        if (colliders[0].TryGetComponent<PlayerInteraction>(out PlayerInteraction interaction))
         {
-            _pickup.Pickup(_pickup.pickup);
-            inventoryObject = _pickup.pickup.transform;
-            inventoryObject.parent = hand.transform;
-            hasObjectInHand = true;
+            popUpMenuInteraction.gameObject.SetActive(true);
 
-            //Make Pickup text "Press "E" To Pickup {Food}
+            if (Keyboard.current.eKey.wasPressedThisFrame)
+            {
+                popUpMenuInteraction.gameObject.SetActive(false);
+                interaction.DoStuff();
+            }
         }
     }
 
@@ -355,6 +357,8 @@ public class NetworkPlayerController : NetworkBehaviour
     [ClientCallback]
     void FixedUpdate()
     {
+        
+
         if (moveDirection.magnitude >= 0.1f)
         {
             cam = Camera.main.transform;
@@ -402,6 +406,8 @@ public class NetworkPlayerController : NetworkBehaviour
     [ClientCallback]
     private void Update()
     {
+        CheckPickup();
+
         walkSFXDelay += Time.deltaTime;
 
         if (hasAuthority && SceneManager.GetActiveScene().name.StartsWith("Minimap_"))

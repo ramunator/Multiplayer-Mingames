@@ -10,7 +10,8 @@ public class Holdable : ScriptableObject
     {
         Gun,
         Bomb,
-        Item
+        Item,
+        BoxingGlove
     };
 
     public Type type;

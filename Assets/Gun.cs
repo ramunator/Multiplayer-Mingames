@@ -76,38 +76,39 @@ public class Gun : MonoBehaviour
 
     public IEnumerator Attack()
     {
-
-        if(holdable.type == Holdable.Type.Gun)
+        if(holdable != null)
         {
-            RaycastHit hit;
-            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, 999f, playerLayer))
+            if (holdable.type == Holdable.Type.Gun)
             {
-                Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
-                Debug.Log("Did Hit");
-
-                LineRenderer laserBulletLineInstance = Instantiate(laserBulletLine);
-
-                laserBulletLineInstance.SetPosition(0, firePoint.position);
-                laserBulletLineInstance.SetPosition(1, hit.point);
-
-                NetworkServer.Spawn(laserBulletLineInstance.gameObject);
-
-                AudioManager.instance.Play("LaserBullet");
-
-                if (hit.collider.TryGetComponent<TestDissolve>(out TestDissolve testDissolve) && hit.collider.gameObject.GetComponent<NetworkIdentity>().hasAuthority == false)
+                RaycastHit hit;
+                if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, 999f, playerLayer))
                 {
-                    testDissolve.CmdDie();
+                    Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+                    Debug.Log("Did Hit");
+
+                    LineRenderer laserBulletLineInstance = Instantiate(laserBulletLine);
+
+                    laserBulletLineInstance.SetPosition(0, firePoint.position);
+                    laserBulletLineInstance.SetPosition(1, hit.point);
+
+                    NetworkServer.Spawn(laserBulletLineInstance.gameObject);
+
+                    AudioManager.instance.Play("LaserBullet");
+
+                    if (hit.collider.TryGetComponent<TestDissolve>(out TestDissolve testDissolve) && hit.collider.gameObject.GetComponent<NetworkIdentity>().hasAuthority == false)
+                    {
+                        testDissolve.CmdDie();
+                    }
+
+                    yield return new WaitForSeconds(0.3f);
+
+                    Destroy(laserBulletLineInstance.gameObject);
                 }
-
-                yield return new WaitForSeconds(0.3f);
-
-                Destroy(laserBulletLineInstance.gameObject);
+            }
+            else if (holdable.type == Holdable.Type.Bomb)
+            {
+                StartCoroutine(BombAttack());
             }
         }
-        else if(holdable.type == Holdable.Type.Bomb)
-        {
-            StartCoroutine(BombAttack());
-        }
-        
     }
 }

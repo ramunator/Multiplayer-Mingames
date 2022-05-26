@@ -47,8 +47,6 @@ public class LaserGame : NetworkBehaviour
             player.gun.UpdateHoldable();
 
             player.gun.GetComponent<MeshFilter>().mesh = laserGunHoldable.itemMesh;
-
-            Debug.Log("Test");
         }
 
     }

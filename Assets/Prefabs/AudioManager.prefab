@@ -90,3 +90,30 @@ MonoBehaviour:
     loop: 0
     mixerGroup: {fileID: 0}
     source: {fileID: 0}
+  - name: LightSaberOpen
+    clip: {fileID: 8300000, guid: 6ef9014f41475c042a65f8be904c71a5, type: 3}
+    volume: 1
+    volumeVariance: 0.5
+    pitch: 2
+    pitchVariance: 0
+    loop: 0
+    mixerGroup: {fileID: 0}
+    source: {fileID: 0}
+  - name: LightSaberIdle
+    clip: {fileID: 8300000, guid: 4deb3fe214c7da6408a4a32f4e2cab5f, type: 3}
+    volume: 1
+    volumeVariance: 0.2
+    pitch: 2
+    pitchVariance: 0.5
+    loop: 1
+    mixerGroup: {fileID: 0}
+    source: {fileID: 0}
+  - name: LightSaberClose
+    clip: {fileID: 8300000, guid: 24405d4e7d77e7d41b9c075f9a73174e, type: 3}
+    volume: 0.5
+    volumeVariance: 0.5
+    pitch: 2
+    pitchVariance: 0
+    loop: 0
+    mixerGroup: {fileID: 0}
+    source: {fileID: 0}
