@@ -45,8 +45,6 @@ public class Gun : MonoBehaviour
         LeftHandGrip.localRotation = Quaternion.Euler(holdable.LeftHandGripRot);
         RightHandGrip.localRotation = Quaternion.Euler(holdable.RightHandGripRot);
 
-        UpdateHoldable();
-
         Debug.Log(LeftHandGrip + " | " + RightHandGrip);
         Debug.Log(holdable.LeftHandGripPos + " | " + holdable.RightHandGripPos);
     }

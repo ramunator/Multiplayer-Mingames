@@ -8,6 +8,8 @@ public class KingOfTheHill : NetworkBehaviour
 {
     public List<float> playerScores = new List<float>();
 
+    public float scoreMultiplier = 4;
+
     public Holdable boxingGlove;
 
     private MyNetworkManager networkManager;
@@ -49,7 +51,6 @@ public class KingOfTheHill : NetworkBehaviour
 
             player.gun.GetComponent<MeshFilter>().mesh = boxingGlove.itemMesh;
         }
-
     }
 
 

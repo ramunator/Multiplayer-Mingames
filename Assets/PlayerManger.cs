@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerManger : MonoBehaviour
 {
-    NetworkPlayerController player;
     public static int playerMatID;
     public static int PlayerId;
 
