@@ -3073,7 +3073,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5118991004758795336}
-  m_LocalRotation: {x: 0.31858742, y: -0.000000016309816, z: 0.000000005481737, w: 0.9478935}
+  m_LocalRotation: {x: 0.31858742, y: 0.000000016309816, z: -0.000000005481737, w: 0.9478935}
   m_LocalPosition: {x: -0.58000016, y: 2.6099997, z: 1.1500001}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -3649,7 +3649,7 @@ MonoBehaviour:
     m_MaintainTargetPositionOffset: 0
     m_MaintainTargetRotationOffset: 0
   m_SourceObjectsGUIToggle: 1
-  m_SettingsGUIToggle: 0
+  m_SettingsGUIToggle: 1
 --- !u!1 &7292343546611387021
 GameObject:
   m_ObjectHideFlags: 0
