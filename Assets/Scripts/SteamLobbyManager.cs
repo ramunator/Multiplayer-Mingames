@@ -90,9 +90,10 @@ public class SteamLobbyManager : MonoBehaviour
     private void OnLobbyCreated(LobbyCreated_t callback)
     {
         if(callback.m_eResult != EResult.k_EResultOK) { Debug.LogError("Lobby Failed"); return; }
-        NetworkManager.StartHost();
 
         currentLobbyId = callback.m_ulSteamIDLobby;
+
+        NetworkManager.StartHost();
 
         SteamMatchmaking.SetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), "HostAddress", SteamUser.GetSteamID().ToString());
         SteamMatchmaking.SetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), "name", lobbyName);
@@ -105,7 +106,7 @@ public class SteamLobbyManager : MonoBehaviour
     }
     private void OnLobbyEntered(LobbyEnter_t callback)
     {
-        if (NetworkServer.active) { return; }
+        if (NetworkServer.active) { Debug.LogError("Network Server Active"); return; }
 
         currentLobbyId = callback.m_ulSteamIDLobby;
 
@@ -123,14 +124,16 @@ public class SteamLobbyManager : MonoBehaviour
         SteamMatchmaking.JoinLobby(lobbyId);
     }
 
-    public void GetLobbiesList()
+    public void GetLobbiesList(string lobbyName, ELobbyDistanceFilter eLobbyDistanceFilter)
     {
         if(lobbyIds.Count > 0) { lobbyIds.Clear(); }
 
-        SteamMatchmaking.AddRequestLobbyListResultCountFilter(60);
+        if(lobbyName.Length > 0) { SteamMatchmaking.AddRequestLobbyListStringFilter("name", lobbyName, ELobbyComparison.k_ELobbyComparisonEqual); }
+        if(eLobbyDistanceFilter != ELobbyDistanceFilter.k_ELobbyDistanceFilterDefault) { SteamMatchmaking.AddRequestLobbyListDistanceFilter(eLobbyDistanceFilter); }
+        
+        SteamMatchmaking.AddRequestLobbyListResultCountFilter(30);
         SteamMatchmaking.RequestLobbyList();
     }
-
 
     private void OnGetLobbyList(LobbyMatchList_t callback)
     {

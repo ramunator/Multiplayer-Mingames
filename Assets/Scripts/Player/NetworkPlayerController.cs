@@ -11,6 +11,7 @@ using StarterAssets;
 using UnityEngine.InputSystem.Users;
 using UnityEngine.InputSystem.Utilities;
 using EZCameraShake;
+using UnityEngine.UI;
 
 public class NetworkPlayerController : NetworkBehaviour 
 {
@@ -24,9 +25,9 @@ public class NetworkPlayerController : NetworkBehaviour
     public Transform popUpMenuInteraction;
     [SerializeField] private float speed;
     [SerializeField] private float turnSmoothTime = .1f;
-    [SerializeField] private SkinnedMeshRenderer playerMeshRenderer;
+    public SkinnedMeshRenderer playerMeshRenderer;
     [SerializeField] private List<Material> playerMaterials = new List<Material>();
-    [SerializeField] private TMPro.TMP_Text playerNameText;
+    [SerializeField] private RawImage playerProfilePic;
     [SerializeField] private ParticleSystem bloodParticle;
     public GameObject hand;
     [SerializeField] private LayerMask pickupLayer;
@@ -42,7 +43,6 @@ public class NetworkPlayerController : NetworkBehaviour
     private Animator anim;
     private Vector3 moveDirection;
     private Vector3 moveDir;
-    float closestCustomer = 2;
     bool hasObjectInHand;
 
     [Space(15)]
@@ -92,25 +92,44 @@ public class NetworkPlayerController : NetworkBehaviour
         Application.targetFrameRate = 60;
     }
 
-    private void Start()
+    public static Texture2D GetSteamImageAsTexture2D(int iImage)
     {
-        if (SteamManager.Initialized)
-        {
-            playerNameText.text = SteamFriends.GetPersonaName();
+        if (!SteamManager.Initialized) { return null; }
 
-            
+        Texture2D ret = null;
+        uint ImageWidth;
+        uint ImageHeight;
+        bool bIsValid = SteamUtils.GetImageSize(iImage, out ImageWidth, out ImageHeight);
+
+        if (bIsValid)
+        {
+            byte[] Image = new byte[ImageWidth * ImageHeight * 4];
+
+            bIsValid = SteamUtils.GetImageRGBA(iImage, Image, (int)(ImageWidth * ImageHeight * 4));
+            if (bIsValid)
+            {
+                ret = new Texture2D((int)ImageWidth, (int)ImageHeight, TextureFormat.RGBA32, false, true);
+                ret.LoadRawTextureData(Image);
+                ret.Apply();
+            }
         }
+
+        return ret;
     }
 
     public void CheckForEnablePlayerComp()
     {
-        if (hasAuthority && SceneManager.GetActiveScene().name.StartsWith("Minimap_"))
+        if (isLocalPlayer && SceneManager.GetActiveScene().name.StartsWith("Minimap_"))
         {
             PlayerSpawnManager.SearchForSpawns();
             PlayerSpawnManager.PlayerSpawnPos(PlayerSpawnManager.SpawnState.Random, gameObject);
 
+            CmdEnablePlayerMesh();
+
+
             transform.Find("CM FreeLook1").GetComponent<CinemachineVirtualCamera>().enabled = true;
-            playerNameText.enabled = false;
+            GetComponent<playerObjectController>().playerNameText.enabled = false;
+            playerProfilePic.gameObject.SetActive(false);
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
 
@@ -121,6 +140,7 @@ public class NetworkPlayerController : NetworkBehaviour
             controls.Player.Jump.performed += ctx => CmdJump();
 
             controls.Player.Shoot.performed += ctx => CmdShoot();
+
         }
     }
 
@@ -135,9 +155,7 @@ public class NetworkPlayerController : NetworkBehaviour
     {
         enabled = true;
 
-
-
-        CheckForEnablePlayerComp();
+        GetComponent<playerObjectController>().SetPlayerValues();
     }
     
     private void LateUpdate()
@@ -245,18 +263,10 @@ public class NetworkPlayerController : NetworkBehaviour
         moveDirection = new Vector3(direction.x, 0, direction.y);
     }
 
-    private void HandlePlayerIndexChanged(int oldIndex, int newIndex)
-    {
-        Debug.Log(newIndex + " | " + (playerMaterials.Count - 1));
-        if (newIndex >= playerMaterials.Count - 1)
-        {
-            newIndex = 0;
-        }
-        playerMeshRenderer.material = playerMaterials[newIndex];
-    }
-
     private void CheckPickup()
     {
+        if (!isLocalPlayer) { return; }
+
         Collider[] colliders = Physics.OverlapSphere(transform.position, 2f, pickupLayer);    
 
         if(colliders.Length <= 0) { popUpMenuInteraction.gameObject.SetActive(false); return; }
@@ -273,91 +283,42 @@ public class NetworkPlayerController : NetworkBehaviour
         }
     }
 
-    private void Drop()
+    [Command]
+    void CmdSyncPosRot(Vector3 localPosition, Quaternion localRotation)
     {
-        if(Inventory == null) { return; }
-
-
-        Inventory.Drop();
-        hasObjectInHand = false;
-
-        inventoryObject.transform.parent = null;
-
-
-        inventoryObject.transform.position += new Vector3(0, 1.2f, 0);
-        inventoryObject.GetComponent<Rigidbody>().velocity += new Vector3(moveDir.x * 8.5f, inventoryObject.position.y, moveDir.z * 8.5f);
-        inventoryObject.GetComponent<BoxCollider>().enabled = true;
-        inventoryObject = null;
+        RpcSyncPosRot(localPosition, localRotation);
     }
 
-    private void ServeFood()
+    [ClientRpc]
+    void RpcSyncPosRot(Vector3 localPosition, Quaternion localRotation)
     {
-        if (Inventory == null) { return; }
-
-
-
-        IServeable _food = inventoryObject.GetComponent<IServeable>();
-
-        GameObject[] customers = GameObject.FindGameObjectsWithTag("Customer").ToArray();
-        GameObject closestCustomerGameobject = null;
-        foreach(GameObject _customer in customers)
+        if (!isLocalPlayer)
         {
-            if(Vector3.Distance(_customer.transform.position, transform.position) < closestCustomer)
-            {
-                closestCustomer = Vector3.Distance(_customer.transform.position, transform.position);
-                closestCustomerGameobject = _customer;
-                Debug.Log("Test");
-            }
+            transform.localPosition = localPosition;
+            transform.localRotation = localRotation;
         }
-
-
-
-        if(closestCustomerGameobject == null) { return; }
-
-        Order customerOrder = closestCustomerGameobject.transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<Order>();
-
-        if (customerOrder.currentOrder != inventoryObject.GetComponent<Food>().reciepe) 
-        {
-            GetComponent<SFXPlayer>().PlaySFX(0);
-
-            return;
-        }
-
-        Order order = closestCustomerGameobject.transform.GetChild(1).GetChild(0).Find("Order").GetComponent<Order>();
-
-        order.hasGotFood = true;
-        order.isSitting = false;
-
-
-
-        order.customerObject.anim.SetBool("IsWalking", true);
-        order.customerObject.rb.isKinematic = false;
-
-        _food.Serve();
-
-        WhiteBoard.RemoveOrder(order);
-
-        closestCustomerGameobject.GetComponent<CustomerObject>().anim.SetBool("HasGotOrder", true);
-        closestCustomerGameobject.GetComponent<CustomerObject>().anim.SetBool("IsWalking", true);
-        GameObject tray = closestCustomerGameobject.transform.Find("Tray").gameObject;
-        tray.SetActive(true);
-
-        tray.GetComponent<Tray>().mainItemPlaced = inventoryObject.gameObject;
-        GetComponent<SFXPlayer>().PlaySFX(1);
-        GameManager.AddCash(10);
-
-        inventoryObject.parent = tray.transform.GetChild(1);
-        inventoryObject.GetComponent<Rigidbody>().isKinematic = true;
-
-        inventoryObject = null;
     }
 
-    
+    [Command]
+    public void CmdEnablePlayerMesh()
+    {
+        playerMeshRenderer.transform.gameObject.SetActive(true);
+    }
 
     [ClientCallback]
-    void FixedUpdate()
+    private void Update()
     {
-        
+        CheckPickup();
+
+        walkSFXDelay += Time.deltaTime;
+
+        if (isLocalPlayer && SceneManager.GetActiveScene().name.StartsWith("Minimap_"))
+        {
+            if(GetComponent<CharacterController>().enabled == false)
+            {
+                CheckForEnablePlayerComp();
+            }
+        }
 
         if (moveDirection.magnitude >= 0.1f)
         {
@@ -377,50 +338,15 @@ public class NetworkPlayerController : NetworkBehaviour
                 walkSFXDelay = 0;
             }
         }
-        else
+        else if(moveDirection.magnitude <= 0.1f)
         {
             anim.SetBool("Running", false);
             moveDirection = Vector3.zero;
         }
 
-
-
-    }
-
-
-    [Command]
-    void CmdSyncPosRot(Vector3 localPosition, Quaternion localRotation)
-    {
-        RpcSyncPosRot(localPosition, localRotation);
-    }
-
-    [ClientRpc]
-    void RpcSyncPosRot(Vector3 localPosition, Quaternion localRotation)
-    {
-        if (!isLocalPlayer)
-        {
-            transform.localPosition = localPosition;
-            transform.localRotation = localRotation;
-        }
-    }
-    [ClientCallback]
-    private void Update()
-    {
-        CheckPickup();
-
-        walkSFXDelay += Time.deltaTime;
-
-        if (hasAuthority && SceneManager.GetActiveScene().name.StartsWith("Minimap_"))
-        {
-            if(playerMeshRenderer.transform.gameObject.activeSelf == false)
-            {
-                playerMeshRenderer.transform.gameObject.SetActive(true);
-                CheckForEnablePlayerComp();
-            }
-        }
         else if (!hasAuthority && SceneManager.GetActiveScene().name.StartsWith("Minimap_"))
         {
-            playerNameText.enabled = true;
+            GetComponent<playerObjectController>().playerNameText.enabled = true;
         }
         else if (!SceneManager.GetActiveScene().name.StartsWith("Minimap_"))
         {

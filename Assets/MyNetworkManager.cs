@@ -19,7 +19,7 @@ public class MyNetworkManager : NetworkManager
         {
             //Debug.Log(File.ReadAllText("C:/Programing/Unity/Projects/SythPolygonTest/WorldData.dat"));
 
-            
+
 
             playerObjectController GamePlayerInstance = Instantiate(GamePlayerPrefab);
             
@@ -32,7 +32,11 @@ public class MyNetworkManager : NetworkManager
 
             chatInstance.lobbyId = SteamLobbyManager.Instance.currentLobbyId;
 
+
             NetworkServer.Spawn(chatInstance.gameObject);
+
+            PlayerSpawnManager.SearchForSpawns();
+            PlayerSpawnManager.PlayerSpawnPos(PlayerSpawnManager.SpawnState.Order, GamePlayerInstance.gameObject);
         }
         if (SceneManager.GetActiveScene().name.StartsWith("Minimap_"))
         {

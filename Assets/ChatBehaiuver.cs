@@ -24,9 +24,12 @@ public class ChatBehaiuver : NetworkBehaviour
     protected Callback<LobbyChatMsg_t> LobbyChatMsg;
     protected Callback<LobbyCreated_t> lobbyCreated;
 
+    [SerializeField] private float spamDelay = 1.5f;
 
-    string newMsg;
+    float timeBtwLastMsg = 0f;
+    float timeBtwSelected = 0f;
 
+    bool isSelected = false;
 
     public enum MessageTypeEnum
     {
@@ -60,11 +63,27 @@ public class ChatBehaiuver : NetworkBehaviour
         ChatBehaiuver.Instance.chatText.text = $"{data}";
     }
 
+    public void IsSelected(bool isSelected)
+    {
+        this.isSelected = isSelected;
+    }
+
     private void Update()
     {
-        if (Keyboard.current.enterKey.wasPressedThisFrame && inputField.isFocused)
+        timeBtwLastMsg += Time.deltaTime;
+        timeBtwSelected += Time.deltaTime;
+
+        if (Keyboard.current.enterKey.wasPressedThisFrame && isSelected && timeBtwLastMsg > spamDelay)
         {
+            Debug.Log("Send Message!");
             Send(inputField.text, MessageTypeEnum.ChatMessage);
+            timeBtwLastMsg = 0;
+        }
+        else if (Keyboard.current.enterKey.wasPressedThisFrame && !isSelected && timeBtwSelected > .25f)
+        {
+            Debug.Log("Test some" + this.gameObject);
+            inputField.Select();
+            timeBtwSelected = 0;
         }
     }
 

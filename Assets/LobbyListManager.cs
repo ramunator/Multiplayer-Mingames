@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Steamworks;
+using TMPro;
 
 public class LobbyListManager : MonoBehaviour
 {
@@ -11,6 +12,10 @@ public class LobbyListManager : MonoBehaviour
     public GameObject lobbyListContent;
 
     public GameObject buttons;
+
+    public TMP_InputField lobbyNameField;
+
+    public ELobbyDistanceFilter elobbyDistanceFilter;
 
     public List<GameObject> LobbyList = new List<GameObject>();
 
@@ -22,11 +27,31 @@ public class LobbyListManager : MonoBehaviour
         }
     }
 
+    public void GetDistanceFilter(int index)
+    {
+        Debug.Log(index);
+        if(index == 0) { elobbyDistanceFilter = ELobbyDistanceFilter.k_ELobbyDistanceFilterDefault; }
+        if(index == 1) { elobbyDistanceFilter = ELobbyDistanceFilter.k_ELobbyDistanceFilterClose; }
+        if(index == 2) { elobbyDistanceFilter = ELobbyDistanceFilter.k_ELobbyDistanceFilterFar; }
+    }
+
     public void GetListOfLobby()
     {
         buttons.gameObject.SetActive(false);
 
-        SteamLobbyManager.Instance.GetLobbiesList();
+        SteamLobbyManager.Instance.GetLobbiesList(string.Empty, ELobbyDistanceFilter.k_ELobbyDistanceFilterDefault);
+    }
+
+    public void UpdateLobbiesList()
+    {
+        SteamLobbyManager.Instance.GetLobbiesList(lobbyNameField.text, elobbyDistanceFilter);
+    }
+
+
+    public void RefreshList()
+    {
+        lobbyNameField.text = string.Empty;
+        SteamLobbyManager.Instance.GetLobbiesList(string.Empty, ELobbyDistanceFilter.k_ELobbyDistanceFilterDefault);
     }
 
     public void DisplayLobby(List<CSteamID> lobbyIds, LobbyDataUpdate_t result)

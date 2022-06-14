@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using UnityEngine.SceneManagement;
 
 public class PlayerSpawnManager : MonoBehaviour
 {
@@ -49,7 +50,11 @@ public class PlayerSpawnManager : MonoBehaviour
             player.transform.position = Instance.playerSpawns[Instance.playersSpawned].spawn.position;
         }
         Instance.playersSpawned += 1;
-        player.GetComponent<CharacterController>().enabled = true;
+
+        if (SceneManager.GetActiveScene().name.StartsWith("Minimap_"))
+        {
+            player.GetComponent<CharacterController>().enabled = true;
+        }
     }
 
 }

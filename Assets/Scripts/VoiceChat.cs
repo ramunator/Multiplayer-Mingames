@@ -24,8 +24,10 @@ public class VoiceChat : NetworkBehaviour
             VoiceManager.Instance.RemovePlayerVoiceGFX();
         }
         if (isLocalPlayer && Keyboard.current.vKey.isPressed)
+        {
+            Debug.Log("Test");
             SteamUser.StartVoiceRecording();
-
+        }
         if (true)
         {
             uint Compressed;
@@ -47,12 +49,13 @@ public class VoiceChat : NetworkBehaviour
     void Cmd_SendData(byte[] data, uint size)
     {
         Debug.Log("Command");
-        Collider[] cols = Physics.OverlapSphere(transform.position, 150, playerMask);
+        Collider[] cols = Physics.OverlapSphere(transform.position, 5000, playerMask);
         for (int i = 0; i < cols.Length; i++)
         {
+            Target_PlaySound(cols[i].GetComponent<NetworkIdentity>().connectionToClient, data, size);
             if (cols[i].GetComponent<NetworkIdentity>())
             {
-                Target_PlaySound(cols[i].GetComponent<NetworkIdentity>().connectionToClient, data, size);
+                //Target_PlaySound(cols[i].GetComponent<NetworkIdentity>().connectionToClient, data, size);
             }
         }
     }

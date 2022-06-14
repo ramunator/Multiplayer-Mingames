@@ -59,7 +59,9 @@ public class KingOfTheHill : NetworkBehaviour
         foreach(playerObjectController players in NetworkManager.GamePlayers)
         {
             playerScores.Add(0);
-            scoreInstance = Instantiate(kingOfTheHillScore, players.gameObject.transform.Find("Canvas"));
+
+            if(players.hasAuthority)
+                scoreInstance = Instantiate(kingOfTheHillScore, players.gameObject.transform.Find("Canvas"));
         }
         GiveAllPlayersBoxinGlove();
     }

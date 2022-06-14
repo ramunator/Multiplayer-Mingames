@@ -12,6 +12,7 @@ public class LobbyDataEntry : MonoBehaviour
     public CSteamID lobbyId;
     public string lobbyName;
     public TMP_Text lobbyNameText;
+    public TMP_Text playersInLobby;
     private SteamLobbyManager steamLobbyManager;
 
     private void Start()
@@ -29,6 +30,8 @@ public class LobbyDataEntry : MonoBehaviour
         {
             lobbyNameText.text = lobbyName;
         }
+
+        playersInLobby.text = $"<color=black>{SteamMatchmaking.GetNumLobbyMembers(lobbyId)} / {SteamMatchmaking.GetLobbyMemberLimit(lobbyId)}";
     }
 
     public void JoinLobby()

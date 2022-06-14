@@ -4,6 +4,9 @@ using UnityEngine;
 using Mirror;
 using Steamworks;
 using UnityEngine.Animations.Rigging;
+using UnityEngine.SceneManagement;
+using TMPro;
+using UnityEngine.UI;
 
 public class playerObjectController : NetworkBehaviour
 {
@@ -17,6 +20,11 @@ public class playerObjectController : NetworkBehaviour
     public Transform rig;
     public TwoBoneIKConstraint leftHandRig;
     public TwoBoneIKConstraint rightHandRig;
+
+    public TMP_Text playerNameText;
+    public RawImage playerIcon;
+
+    bool avatarReceived = false;
 
     private MyNetworkManager networkManager;
 
@@ -32,9 +40,69 @@ public class playerObjectController : NetworkBehaviour
         }
     }
 
+
+    protected Callback<AvatarImageLoaded_t> ImageLoaded;
+
+    public void SetPlayerValues()
+    {
+        if (!avatarReceived)
+        {
+            GetPlayerIcon();
+        }
+    }
+    
+    void GetPlayerIcon()
+    {
+        Debug.Log("Trying To Get Player Profile");
+        int imageId = SteamFriends.GetLargeFriendAvatar((CSteamID)playerSteamId);
+        if (imageId == -1) { Debug.LogError("Player Image Error"); return; }
+        playerIcon.texture = GetSteamImageAsTexture(imageId);
+    }
+
+    private void OnImageLoaded(AvatarImageLoaded_t callback)
+    {
+        if (callback.m_steamID.m_SteamID == playerSteamId)
+        {
+            Debug.Log("Got Profile Picture");
+            playerIcon.texture = GetSteamImageAsTexture(callback.m_iImage);
+        }
+        else
+        {
+            Debug.LogError("Failed To Get Profile Picture");
+            return;
+        }
+    }
+
+    private Texture2D GetSteamImageAsTexture(int iImage)
+    {
+        Texture2D texture = null;
+
+        bool isValid = SteamUtils.GetImageSize(iImage, out uint width, out uint height);
+        if (isValid)
+        {
+            byte[] image = new byte[width * height * 4];
+
+            isValid = SteamUtils.GetImageRGBA(iImage, image, (int)(width * height * 4));
+
+            if (isValid)
+            {
+                texture = new Texture2D((int)width, (int)height, TextureFormat.RGBA32, false, true);
+                texture.LoadRawTextureData(image);
+                texture.Apply();
+            }
+        }
+        else
+        {
+            Debug.LogError("Failed To Load Texture");
+        }
+        avatarReceived = true;
+        return texture;
+    }
+
     private void Start()
     {
         DontDestroyOnLoad(this.gameObject);
+        ImageLoaded = Callback<AvatarImageLoaded_t>.Create(OnImageLoaded);
     }
 
     public override void OnStartAuthority()
@@ -73,6 +141,7 @@ public class playerObjectController : NetworkBehaviour
         if (isClient)
         {
             LobbyController.Instance.UpdatePlayerList();
+            playerNameText.text = playerName;
         }
     }
 

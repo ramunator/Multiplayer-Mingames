@@ -65,6 +65,14 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""ToggleCheatConsole"",
+                    ""type"": ""Button"",
+                    ""id"": ""72eb4397-7382-4e4e-8bb1-08a9d45ac22d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -285,6 +293,17 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Shoot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a679e2d8-011c-4a24-81c8-9f4589d67fa7"",
+                    ""path"": ""<Keyboard>/backquote"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard And Mouse"",
+                    ""action"": ""ToggleCheatConsole"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -621,6 +640,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
         m_Player_Serve = m_Player.FindAction("Serve", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Shoot = m_Player.FindAction("Shoot", throwIfNotFound: true);
+        m_Player_ToggleCheatConsole = m_Player.FindAction("ToggleCheatConsole", throwIfNotFound: true);
         // Look
         m_Look = asset.FindActionMap("Look", throwIfNotFound: true);
         m_Look_MouseLook = m_Look.FindAction("MouseLook", throwIfNotFound: true);
@@ -687,6 +707,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Serve;
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Shoot;
+    private readonly InputAction m_Player_ToggleCheatConsole;
     public struct PlayerActions
     {
         private @InputMaster m_Wrapper;
@@ -697,6 +718,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
         public InputAction @Serve => m_Wrapper.m_Player_Serve;
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
         public InputAction @Shoot => m_Wrapper.m_Player_Shoot;
+        public InputAction @ToggleCheatConsole => m_Wrapper.m_Player_ToggleCheatConsole;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -724,6 +746,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 @Shoot.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShoot;
                 @Shoot.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShoot;
                 @Shoot.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnShoot;
+                @ToggleCheatConsole.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnToggleCheatConsole;
+                @ToggleCheatConsole.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnToggleCheatConsole;
+                @ToggleCheatConsole.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnToggleCheatConsole;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -746,6 +771,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 @Shoot.started += instance.OnShoot;
                 @Shoot.performed += instance.OnShoot;
                 @Shoot.canceled += instance.OnShoot;
+                @ToggleCheatConsole.started += instance.OnToggleCheatConsole;
+                @ToggleCheatConsole.performed += instance.OnToggleCheatConsole;
+                @ToggleCheatConsole.canceled += instance.OnToggleCheatConsole;
             }
         }
     }
@@ -882,6 +910,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
         void OnServe(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnShoot(InputAction.CallbackContext context);
+        void OnToggleCheatConsole(InputAction.CallbackContext context);
     }
     public interface ILookActions
     {
