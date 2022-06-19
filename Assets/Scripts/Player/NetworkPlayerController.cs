@@ -119,14 +119,11 @@ public class NetworkPlayerController : NetworkBehaviour
 
     public void CheckForEnablePlayerComp()
     {
-        if (isLocalPlayer && SceneManager.GetActiveScene().name.StartsWith("Minimap_"))
+        if (hasAuthority && SceneManager.GetActiveScene().name.StartsWith("Minimap_"))
         {
             PlayerSpawnManager.SearchForSpawns();
             PlayerSpawnManager.PlayerSpawnPos(PlayerSpawnManager.SpawnState.Random, gameObject);
-
-            CmdEnablePlayerMesh();
-
-
+ 
             transform.Find("CM FreeLook1").GetComponent<CinemachineVirtualCamera>().enabled = true;
             GetComponent<playerObjectController>().playerNameText.enabled = false;
             playerProfilePic.gameObject.SetActive(false);
@@ -161,9 +158,6 @@ public class NetworkPlayerController : NetworkBehaviour
     private void LateUpdate()
     {
         CameraRotation();
-
-
-        Test(XBoxOrigin);
     }
 
     [ClientCallback]
@@ -251,14 +245,6 @@ public class NetworkPlayerController : NetworkBehaviour
     private void Move(Vector2 direction)
     {
         if (!isLocalPlayer) { return; }
-        if(GameManager.Instance != null)
-        {
-            if (GameManager.Instance.buildMode)
-            {
-                moveDirection = Vector3.zero;
-                return;
-            }
-        }
 
         moveDirection = new Vector3(direction.x, 0, direction.y);
     }
@@ -299,12 +285,6 @@ public class NetworkPlayerController : NetworkBehaviour
         }
     }
 
-    [Command]
-    public void CmdEnablePlayerMesh()
-    {
-        playerMeshRenderer.transform.gameObject.SetActive(true);
-    }
-
     [ClientCallback]
     private void Update()
     {
@@ -332,7 +312,7 @@ public class NetworkPlayerController : NetworkBehaviour
             anim.SetBool("Running", true);
             controller.Move(moveDir.normalized * speed * Time.deltaTime);
 
-            if (walkSFXDelay > Random.Range(.2f, .4f) && isGrounded)
+            if (walkSFXDelay > Random.Range(.3f, .55f) && isGrounded)
             {
                 AudioManager.instance.Play("PlayerWalk");
                 walkSFXDelay = 0;

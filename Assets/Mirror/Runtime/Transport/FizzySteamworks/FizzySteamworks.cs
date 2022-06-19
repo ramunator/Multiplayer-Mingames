@@ -24,7 +24,7 @@ namespace Mirror.FizzySteam
 
         [Tooltip("Use SteamSockets instead of the (deprecated) SteamNetworking. This will always use Relay.")]
         public bool UseNextGenSteamNetworking = true;
-
+        
         private void OnEnable()
         {
             Debug.Assert(Channels != null && Channels.Length > 0, "No channel configured for FizzySteamworks.");

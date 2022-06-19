@@ -1,0 +1,33 @@
+{
+    "name": "RotatePlayer",
+    "maps": [
+        {
+            "name": "Rotation",
+            "id": "1cdf20c1-5f09-4695-ae9c-d8eede00d321",
+            "actions": [
+                {
+                    "name": "Rotate",
+                    "type": "PassThrough",
+                    "id": "31e3360b-c70f-46ac-82cc-ffd214bc952c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "4b744345-62a3-46ab-bc77-10f2e2594ffd",
+                    "path": "<Mouse>/delta/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

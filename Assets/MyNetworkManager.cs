@@ -19,8 +19,6 @@ public class MyNetworkManager : NetworkManager
         {
             //Debug.Log(File.ReadAllText("C:/Programing/Unity/Projects/SythPolygonTest/WorldData.dat"));
 
-
-
             playerObjectController GamePlayerInstance = Instantiate(GamePlayerPrefab);
             
             GamePlayerInstance.connectionId = conn.connectionId;

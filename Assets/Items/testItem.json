@@ -1,0 +1,19 @@
+{
+	"appid": 2063270,
+	"items": [
+	{
+		"itemdefid": 100,
+		"type": "item",
+		"name_english": "Hat",
+		"description": "A Hat",
+		"price": "VLV100",
+		"name_color": "3C352E",
+		"item_slot": "decoration",
+		"item_quality": 0,
+		"icon_url": "https://commons.wikimedia.org/wiki/File:Square_200x200.png",
+		"icon_url_large": "https://commons.wikimedia.org/wiki/File:Square_200x200.png",		
+		"tradable": true,
+		"marketable": true
+	}
+	]
+}

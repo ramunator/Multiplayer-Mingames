@@ -22,6 +22,9 @@ public class playerObjectController : NetworkBehaviour
     public TwoBoneIKConstraint rightHandRig;
 
     public TMP_Text playerNameText;
+    public TMP_Text playerStatsNameText;
+    public TMP_Text playerStatsSteamIDText;
+    public RawImage playerStatsProfilePic;
     public RawImage playerIcon;
 
     bool avatarReceived = false;
@@ -45,10 +48,12 @@ public class playerObjectController : NetworkBehaviour
 
     public void SetPlayerValues()
     {
+        playerStatsSteamIDText.text = playerSteamId.ToString();
         if (!avatarReceived)
         {
             GetPlayerIcon();
         }
+        playerStatsNameText.text = playerName;
     }
     
     void GetPlayerIcon()
@@ -57,6 +62,7 @@ public class playerObjectController : NetworkBehaviour
         int imageId = SteamFriends.GetLargeFriendAvatar((CSteamID)playerSteamId);
         if (imageId == -1) { Debug.LogError("Player Image Error"); return; }
         playerIcon.texture = GetSteamImageAsTexture(imageId);
+        playerStatsProfilePic.texture = GetSteamImageAsTexture(imageId);
     }
 
     private void OnImageLoaded(AvatarImageLoaded_t callback)
@@ -142,6 +148,7 @@ public class playerObjectController : NetworkBehaviour
         {
             LobbyController.Instance.UpdatePlayerList();
             playerNameText.text = playerName;
+            playerStatsNameText.text = playerName;
         }
     }
 
