@@ -334,9 +334,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""096d625d-ed48-4e83-b386-6e5fc24301fe"",
-                    ""path"": ""<Mouse>/delta"",
+                    ""path"": ""<Pointer>/delta"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""ScaleVector2(x=15,y=15),InvertVector2(invertX=false)"",
                     ""groups"": ""Keyboard And Mouse"",
                     ""action"": ""MouseLook"",
                     ""isComposite"": false,

@@ -34,6 +34,8 @@ public class NetworkPlayerController : NetworkBehaviour
     public IPickup Inventory;
     public Transform inventoryObject;
 
+    public float camMoveSideSpeed;
+
     float turnSmoothVelocity;
     float walkSFXDelay;
     
@@ -87,7 +89,7 @@ public class NetworkPlayerController : NetworkBehaviour
 
         _input = GetComponent<StarterAssetsInputs>();
 
-
+        controller = GetComponent<CharacterController>();
 
         Application.targetFrameRate = 60;
     }
@@ -123,12 +125,18 @@ public class NetworkPlayerController : NetworkBehaviour
         {
             PlayerSpawnManager.SearchForSpawns();
             PlayerSpawnManager.PlayerSpawnPos(PlayerSpawnManager.SpawnState.Random, gameObject);
- 
+
+            GetComponent<PlayerInput>().enabled = true;
+            GetComponent<CharacterController>().enabled = true;
+
             transform.Find("CM FreeLook1").GetComponent<CinemachineVirtualCamera>().enabled = true;
             GetComponent<playerObjectController>().playerNameText.enabled = false;
             playerProfilePic.gameObject.SetActive(false);
-            Cursor.lockState = CursorLockMode.Locked;
+
             Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+
+            _input.cursorLocked = true;
 
             controls.Player.Move.started += ctx => Move(ctx.ReadValue<Vector2>());
             controls.Player.Move.performed += ctx => Move(ctx.ReadValue<Vector2>());
@@ -137,6 +145,7 @@ public class NetworkPlayerController : NetworkBehaviour
             controls.Player.Jump.performed += ctx => CmdJump();
 
             controls.Player.Shoot.performed += ctx => CmdShoot();
+
 
         }
     }
@@ -148,16 +157,16 @@ public class NetworkPlayerController : NetworkBehaviour
         //Debug.Log(setHandle);
     }
 
+    private void LateUpdate()
+    {
+        CameraRotation();
+    }
+
     public override void OnStartAuthority()
     {
         enabled = true;
 
         GetComponent<playerObjectController>().SetPlayerValues();
-    }
-    
-    private void LateUpdate()
-    {
-        CameraRotation();
     }
 
     [ClientCallback]
@@ -204,7 +213,6 @@ public class NetworkPlayerController : NetworkBehaviour
 
     private void CameraRotation()
     {
-
         // if there is an input and camera position is not fixed
         if (_input.look.sqrMagnitude >= _threshold)
         {
@@ -219,7 +227,7 @@ public class NetworkPlayerController : NetworkBehaviour
         // Cinemachine will follow this target
         CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);
     }
- 
+
     public IEnumerator Die()
     {
         AudioManager.instance.Play("PlayerDie");
