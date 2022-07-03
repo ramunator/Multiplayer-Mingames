@@ -1,0 +1,60 @@
+{
+	"appid": 2063270,
+	"items": [
+	{
+		"itemdefid": 10,
+		"type": "playtimegenerator",
+		"bundle": "100x100;101x50;102x25;103x2;110x20;111x20;120x5;121x3",
+		"name": "Drop Generator",
+		"name_color":  "7D6D00",
+		"background_color":  "3C352E",
+		"item_slot": "generator",
+		"icon_url": "https://i.imgur.com/F8CnNRa.png",
+		"icon_url_large": "https://i.imgur.com/F8CnNRa.png",
+		"tradable": false,
+		"marketable": false
+	},
+	{
+		"itemdefid": 250,
+		"type":  "item",
+		"name": "Blue Hat",
+		"description": "Blue Hat",
+		"price": "1;USD99",
+		"name_color":  "7D6D00",
+		"background_color":  "3C352E",
+		"item_slot": "decoration",
+		"icon_url": "https://i.imgur.com/kJT3Scj.png",
+		"icon_url_large": "https://i.imgur.com/kJT3Scj.png",
+		"tradable": true,
+		"marketable": true
+	},
+	{
+		"itemdefid": 200,
+		"type":  "item",
+		"price": "1;VLV20",
+		"name_english": "Red Hat",
+		"name_german":  "Roter Hut",
+		"description_english": "Red Hat",
+		"description_german": "Roter Hut",
+		"store_tags": "hat;featured",
+		"icon_url": "https://i.imgur.com/GbSpixJ.png",
+		"icon_url_large": "https://i.imgur.com/GbSpixJ.png",
+		"tradable": true,
+		"marketable": true
+	},
+	{
+		"itemdefid": 300,
+		"type":  "item",
+		"price": "1;VLV100",
+		"name_english": "Green Hat",
+		"name_german":  "Roter Hut",
+		"description_english": "Red Hat",
+		"description_german": "Roter Hut",
+		"store_tags": "hat;featured",
+		"icon_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Square_1.svg/1200px-Square_1.svg.png",
+		"icon_url_large": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Square_1.svg/1200px-Square_1.svg.png",
+		"tradable": true,
+		"marketable": true
+	}
+]
+}

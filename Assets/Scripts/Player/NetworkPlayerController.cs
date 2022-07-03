@@ -137,6 +137,7 @@ public class NetworkPlayerController : NetworkBehaviour
             Cursor.lockState = CursorLockMode.Locked;
 
             _input.cursorLocked = true;
+            _input.cursorInputForLook = true;
 
             controls.Player.Move.started += ctx => Move(ctx.ReadValue<Vector2>());
             controls.Player.Move.performed += ctx => Move(ctx.ReadValue<Vector2>());

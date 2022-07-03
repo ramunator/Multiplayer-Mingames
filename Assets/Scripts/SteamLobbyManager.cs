@@ -106,7 +106,7 @@ public class SteamLobbyManager : MonoBehaviour
     }
     private void OnLobbyEntered(LobbyEnter_t callback)
     {
-        if (NetworkServer.active) { Debug.LogError("Network Server Active"); return; }
+        if (NetworkServer.active) { return; }
 
         currentLobbyId = callback.m_ulSteamIDLobby;
 

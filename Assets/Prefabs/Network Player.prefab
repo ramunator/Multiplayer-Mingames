@@ -2710,6 +2710,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerIndex: -1
+  AutoEnableInputs: 1
   XYAxis: {fileID: 6984435009482073174, guid: 457d09acc343f9b418aa1a04d9f847d1, type: 3}
   ZAxis: {fileID: 0}
 --- !u!1 &5118991004448727709
@@ -3267,8 +3268,8 @@ MonoBehaviour:
   jump: 0
   sprint: 0
   analogMovement: 0
-  cursorLocked: 1
-  cursorInputForLook: 1
+  cursorLocked: 0
+  cursorInputForLook: 0
 --- !u!1 &5118991004516809506
 GameObject:
   m_ObjectHideFlags: 0

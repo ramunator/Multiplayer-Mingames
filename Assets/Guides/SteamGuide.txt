@@ -1,0 +1,12 @@
+StartPurchase
+
+pArrayItemDefs | en liste med item def'ne eks.
+{ 100, 200, 250 }
+
+punArrayQuantity | en liste med mængden af hver item
+{ 1, 3, 1 }
+
+unArrayLength | længden er de 2 arrays
+3
+
+de burde købe 1 af item def 100 3 af 200 og 1 af 250
