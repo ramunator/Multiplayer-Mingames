@@ -9,11 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5043e0cc2d6a00443b87825e5304717f, type: 3}
-  m_Name: Morten
+  m_Script: {fileID: 11500000, guid: 42ad458ccf234e64097bfadfe291c75e, type: 3}
+  m_Name: remove_all_items
   m_EditorClassIdentifier: 
-  customerName: Morten
-  pfModel: {fileID: 1220478773951964781, guid: 663243603a5e40543b7a45fc008b85a8, type: 3}
-  moneyState: 1
-  gender: 3
-  icon: {fileID: 0}
+  commandName: remove_all_items
+  argsLenght: 1

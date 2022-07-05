@@ -587,6 +587,33 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Console",
+            "id": "92e705fe-8085-4da3-aa42-3fee4707469f",
+            "actions": [
+                {
+                    "name": "Open",
+                    "type": "Button",
+                    "id": "9e4d19eb-6b2e-45a6-a9b9-ba6318c24f41",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "360fa7c8-062d-4e1b-a25d-fee5ab63d55b",
+                    "path": "<Keyboard>/rightAlt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Open",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

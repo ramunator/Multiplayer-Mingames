@@ -600,6 +600,33 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Console"",
+            ""id"": ""92e705fe-8085-4da3-aa42-3fee4707469f"",
+            ""actions"": [
+                {
+                    ""name"": ""Open"",
+                    ""type"": ""Button"",
+                    ""id"": ""9e4d19eb-6b2e-45a6-a9b9-ba6318c24f41"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""360fa7c8-062d-4e1b-a25d-fee5ab63d55b"",
+                    ""path"": ""<Keyboard>/rightAlt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Open"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -652,6 +679,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
         m_BuildMode_ZoomCam = m_BuildMode.FindAction("ZoomCam", throwIfNotFound: true);
         m_BuildMode_DestroyBuilding = m_BuildMode.FindAction("DestroyBuilding", throwIfNotFound: true);
         m_BuildMode_RotateCam = m_BuildMode.FindAction("RotateCam", throwIfNotFound: true);
+        // Console
+        m_Console = asset.FindActionMap("Console", throwIfNotFound: true);
+        m_Console_Open = m_Console.FindAction("Open", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -884,6 +914,39 @@ public class @InputMaster : IInputActionCollection, IDisposable
         }
     }
     public BuildModeActions @BuildMode => new BuildModeActions(this);
+
+    // Console
+    private readonly InputActionMap m_Console;
+    private IConsoleActions m_ConsoleActionsCallbackInterface;
+    private readonly InputAction m_Console_Open;
+    public struct ConsoleActions
+    {
+        private @InputMaster m_Wrapper;
+        public ConsoleActions(@InputMaster wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Open => m_Wrapper.m_Console_Open;
+        public InputActionMap Get() { return m_Wrapper.m_Console; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(ConsoleActions set) { return set.Get(); }
+        public void SetCallbacks(IConsoleActions instance)
+        {
+            if (m_Wrapper.m_ConsoleActionsCallbackInterface != null)
+            {
+                @Open.started -= m_Wrapper.m_ConsoleActionsCallbackInterface.OnOpen;
+                @Open.performed -= m_Wrapper.m_ConsoleActionsCallbackInterface.OnOpen;
+                @Open.canceled -= m_Wrapper.m_ConsoleActionsCallbackInterface.OnOpen;
+            }
+            m_Wrapper.m_ConsoleActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Open.started += instance.OnOpen;
+                @Open.performed += instance.OnOpen;
+                @Open.canceled += instance.OnOpen;
+            }
+        }
+    }
+    public ConsoleActions @Console => new ConsoleActions(this);
     private int m_KeyboardAndMouseSchemeIndex = -1;
     public InputControlScheme KeyboardAndMouseScheme
     {
@@ -924,5 +987,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
         void OnZoomCam(InputAction.CallbackContext context);
         void OnDestroyBuilding(InputAction.CallbackContext context);
         void OnRotateCam(InputAction.CallbackContext context);
+    }
+    public interface IConsoleActions
+    {
+        void OnOpen(InputAction.CallbackContext context);
     }
 }
