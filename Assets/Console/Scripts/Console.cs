@@ -9,6 +9,8 @@ using Steamworks;
 
 public class Console : MonoBehaviour
 {
+    public static Console Instance { get; private set; }
+
     public InputMaster controls;
 
     public SteamIntergration steamIntergration;
@@ -17,6 +19,8 @@ public class Console : MonoBehaviour
 
     public TMP_Text consoleField;
     public TMP_InputField consoleInputField;
+
+    public Scrollbar consoleScrollbar;
 
     public void EnterCommand(string command)
     {
@@ -35,11 +39,15 @@ public class Console : MonoBehaviour
             return; 
         }
 
+        consoleScrollbar.value = 1;
+
         ExecuteCommand(args, _command);
     }
 
     private void Awake()
     {
+        Instance = this;
+
         controls = new InputMaster();
 
         controls.Console.Open.performed += ctx => ToggleConsole();
@@ -84,7 +92,7 @@ public class Console : MonoBehaviour
     /// <summary>
     /// <para> Adds an text in the console </para>
     /// </summary>
-    private void AnswerCommand(string message)
+    public void AnswerCommand(string message)
     {
         consoleField.text += $"{message}\n";
     }
@@ -101,6 +109,14 @@ public class Console : MonoBehaviour
         if (string.Equals(command.commandName, "give_item", System.StringComparison.OrdinalIgnoreCase)) { CommandGiveItem(args); }
         if (string.Equals(command.commandName, "remove_all_items", System.StringComparison.OrdinalIgnoreCase)) { CommandRemoveAllItems(args); }
         if (string.Equals(command.commandName, "remove_item", System.StringComparison.OrdinalIgnoreCase)) { CommandRemoveItem(args); }
+        if (string.Equals(command.commandName, "get_all_items", System.StringComparison.OrdinalIgnoreCase)) { CommandGetAllItems(); }
+        if (string.Equals(command.commandName, "drop_random_item", System.StringComparison.OrdinalIgnoreCase)) { CommandDropRandomItem(); }
+
+    }
+
+    private void CommandDropRandomItem()
+    {
+        steamIntergration.TriggerRandomItem();
     }
 
     bool IsDigitsOnly(string str)
@@ -112,6 +128,11 @@ public class Console : MonoBehaviour
         }
 
         return true;
+    }
+
+    public void CommandGetAllItems()
+    {
+        steamIntergration.GetAllItems();
     }
 
     private void CommandRemoveItem(string[] args)
@@ -136,17 +157,16 @@ public class Console : MonoBehaviour
         {
             if(string.IsNullOrWhiteSpace(args[1]) || !IsDigitsOnly(args[1])) { AnswerCommand("<color=red>Itemdef can only have numbers!"); return; }
             int itemDef = int.Parse(args[1]);
-            for (int i = 0; i <= steamIntergration.itemDef.Length; i++)
+            for (int i = 0; i < steamIntergration.itemDefItem.Length; i++)
             {
-                AnswerCommand(steamIntergration.itemDef[i] + " | " + (SteamItemDef_t)itemDef);
-                if (steamIntergration.itemDef[i] == (SteamItemDef_t)itemDef)
+                if (steamIntergration.itemDefItem[i] == (SteamItemDef_t)itemDef)
                 {
                     steamIntergration.steamGetItemsAmmount[i] = 1;
                     steamIntergration.GetItem((SteamItemDef_t)itemDef);
                     AnswerCommand($"<color=green>Gave item to {SteamFriends.GetPersonaName()}");
                     return;
                 }
-                else if(steamIntergration.itemDef[i] != (SteamItemDef_t)itemDef && i == steamIntergration.itemDef.Length)
+                else if(steamIntergration.itemDefItem[i] != (SteamItemDef_t)itemDef && i == steamIntergration.itemDefItem.Length)
                 {
                     AnswerCommand($"<color=red>Error: No itemDefId '{itemDef}'");
                     return;

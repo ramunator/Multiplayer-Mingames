@@ -23,7 +23,8 @@ public class SteamIntergration : MonoBehaviour
     public bool useSteamCloud;
 
     public SteamItemDetails_t[] m_SteamItemDetails;
-    public SteamItemDef_t[] itemDef;
+    public SteamItemDef_t[] itemDefItem;
+    public SteamItemDef_t[] itemDefDrop;
 
     public SteamItemDetails_t testdaw;  
 
@@ -36,6 +37,7 @@ public class SteamIntergration : MonoBehaviour
     uint bufferSize = 100;
 
     public uint arraySize;
+    public uint generateItemsArray;
 
 
     void Awake()
@@ -59,6 +61,7 @@ public class SteamIntergration : MonoBehaviour
             m_SteamItemDetails = null;
 
             SteamInventory.GetAllItems(out _result);
+            SteamInventory.LoadItemDefinitions();
             SteamInventory.RequestPrices();
         }
             
@@ -67,7 +70,7 @@ public class SteamIntergration : MonoBehaviour
 
     private void Update()
     {
-        if (Keyboard.current.enterKey.wasPressedThisFrame)
+        /*if (Keyboard.current.enterKey.wasPressedThisFrame)
         {
 
             SteamInventory.GetAllItems(out _result);
@@ -106,58 +109,98 @@ public class SteamIntergration : MonoBehaviour
                 ret = SteamInventory.GetResultItems(_result, m_SteamItemDetails, ref OutItemsArraySize);
                 Debug.Log(SteamInventory.GetResultItems(_result, m_SteamItemDetails, ref OutItemsArraySize));
 
-            }
+            }*/
 
-            /*SteamInventory.GenerateItems(out _result, itemDef, steamGetItemsAmmount, (uint)itemDef.Length);
-            SteamInventory.ConsumeItem(out _result, m_SteamItemDetails[0].m_itemId, 50);
+        /*SteamInventory.GenerateItems(out _result, itemDef, steamGetItemsAmmount, (uint)itemDef.Length);
+        SteamInventory.ConsumeItem(out _result, m_SteamItemDetails[0].m_itemId, 50);
 
-            Debug.Log(SteamInventory.GetItemDefinitionProperty((SteamItemDef_t)250, "description", out testSteamGet, ref bufferSize));
-            Debug.Log(testSteamGet + " | " + bufferSize);
-            */
-        }
+        Debug.Log(SteamInventory.GetItemDefinitionProperty((SteamItemDef_t)250, "description", out testSteamGet, ref bufferSize));
+        Debug.Log(testSteamGet + " | " + bufferSize);
+
+    }*/
     }
+
+    public void GetAllItems()
+    {
+        m_SteamItemDetails = null;
+        SteamInventory.GetAllItems(out _result);
+
+    }
+
 
     public void RemoveAllItems()
     {
-        uint OutItemsArraySize = 0;
-        bool ret = SteamInventory.GetResultItems(_result, null, ref OutItemsArraySize);
-        if (ret && OutItemsArraySize > 0)
+        m_SteamItemDetails = null;
+        GetAllItems();
+
+        StartCoroutine(RemoveAllItemsCou());
+    }
+
+    private IEnumerator RemoveAllItemsCou()
+    {
+        yield return new WaitForSeconds(5f);
+        if (m_SteamItemDetails != null)
         {
-            m_SteamItemDetails = new SteamItemDetails_t[OutItemsArraySize];
-            ret = SteamInventory.GetResultItems(_result, m_SteamItemDetails, ref OutItemsArraySize);
             for (int i = 0; i < m_SteamItemDetails.Length; i++)
             {
+                yield return new WaitForSeconds(.1f);
                 SteamInventory.ConsumeItem(out _result, m_SteamItemDetails[i].m_itemId, 1);
             }
         }
         else
         {
-            Debug.LogError("Failed To Remove All Items!");
+            Console.Instance.AnswerCommand($"<color=red>SteamItemDetails is null! size: ");
+            yield return null;
         }
+        Console.Instance.AnswerCommand($"Items Left: {arraySize}");
     }
 
     public void RemoveItem(SteamItemDef_t itemDefId)
     {
-        uint OutItemsArraySize = 0;
-        bool ret = SteamInventory.GetResultItems(_result, null, ref OutItemsArraySize);
-        if (ret && OutItemsArraySize > 0)
+        if (m_SteamItemDetails != null)
         {
-            m_SteamItemDetails = new SteamItemDetails_t[OutItemsArraySize];
-            ret = SteamInventory.GetResultItems(_result, m_SteamItemDetails, ref OutItemsArraySize);
             for (int i = 0; i < m_SteamItemDetails.Length; i++)
             {
-                if(m_SteamItemDetails[i].m_iDefinition == itemDefId)
+                if (m_SteamItemDetails[i].m_iDefinition == itemDefId)
                 {
-                    SteamInventory.ConsumeItem(out _result, m_SteamItemDetails[i].m_itemId, 1);
+                    bool ret = SteamInventory.ConsumeItem(out _result, m_SteamItemDetails[i].m_itemId, 1);
+                    print("SteamInventory.ConsumeItem(out m_SteamInventoryResult, " + m_SteamItemDetails[0].m_itemId + ", 1) - " + ret + " -- " + _result);
                 }
             }
         }
     }
 
+    public void TriggerRandomItem()
+    {
+        int index = UnityEngine.Random.Range(0, itemDefDrop.Length);
+        SteamInventory.GetAllItems(out _result);
+
+        Console.Instance.AnswerCommand($"<color=green>{SteamFriends.GetPersonaName()} Got an {itemDefDrop[index]}");
+    }
+
     public void GetItem(SteamItemDef_t itemDefId)
     {
         ResetSteamItemsAmmount();
-        SteamInventory.GenerateItems(out _result, itemDef, steamGetItemsAmmount, arraySize);
+        uint generateItemArray = (uint)itemDefItem.Length;
+        for (int i = 0; i < itemDefItem.Length; i++)
+        {
+            if(itemDefItem[i] == itemDefId)
+            {
+                SetSteamItemsAmmount(i, 1);
+                SteamInventory.GenerateItems(out _result, itemDefItem, steamGetItemsAmmount, generateItemArray);
+
+                string itemName;
+                uint bufferItemName = 2048;
+                SteamInventory.GetItemDefinitionProperty(itemDefItem[1], "name", out itemName, ref bufferItemName);
+
+                Console.Instance.AnswerCommand($"<color=green>{SteamFriends.GetPersonaName()} got an {itemName}!");
+                return;
+            }
+            else
+            {
+                Console.Instance.AnswerCommand($"<color=red>There was no item with the id: {itemDefId}!");
+            }
+        }
     }
 
     private void OnFileReadAsync(RemoteStorageFileReadAsyncComplete_t remoteStorageFile)
@@ -179,13 +222,21 @@ public class SteamIntergration : MonoBehaviour
         _result = result.m_handle;
         Debug.Log(SteamInventory.GetResultStatus(_result));
 
+        if(m_SteamItemDetails == null)
+        {
+            bool ret = SteamInventory.GetResultItems(_result, null, ref arraySize);
+            if (ret && arraySize > 0)
+            {
+                m_SteamItemDetails = new SteamItemDetails_t[arraySize];
+                ret = SteamInventory.GetResultItems(_result, m_SteamItemDetails, ref arraySize);
+            }
+            else
+            {
+                Console.Instance.AnswerCommand($"<color=red>Error: Ret: {ret} Array-size: {arraySize}");
+            }
+        }
         //SteamInventory.TriggerItemDrop(out _result, itemDef[1]);
-
-        SetSteamItemsAmmount(2, 1);
-
         SteamInventory.RequestPrices();
-
-        ResetSteamItemsAmmount();
 
         SteamInventory.DestroyResult(_result);
     }
@@ -196,13 +247,13 @@ public class SteamIntergration : MonoBehaviour
         {
             ResetSteamPurchaseAmmount();
             steamPurchaseItemAmmount[id] = 1;
-            if (itemDef.Length == steamPurchaseItemAmmount.Length)
+            if (itemDefItem.Length == steamPurchaseItemAmmount.Length)
             {
-                SteamInventory.StartPurchase(itemDef, steamPurchaseItemAmmount, (uint)itemDef.Length);
+                SteamInventory.StartPurchase(itemDefItem, steamPurchaseItemAmmount, (uint)itemDefItem.Length);
             }
             else
             {
-                Debug.LogError("SteamInventory Purchase Failed! ItemDef " + itemDef.Length + " is not the same as steampurchaselistammount " + steamPurchaseItemAmmount.Length);
+                Debug.LogError("SteamInventory Purchase Failed! ItemDef " + itemDefItem.Length + " is not the same as steampurchaselistammount " + steamPurchaseItemAmmount.Length);
             }
         }
     }
