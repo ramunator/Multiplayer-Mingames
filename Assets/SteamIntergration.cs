@@ -15,10 +15,6 @@ public class SteamIntergration : MonoBehaviour
     protected Callback<RemoteStorageFileReadAsyncComplete_t> remoteStorageFileReadAsyncComplete;
     protected Callback<SteamInventoryStartPurchaseResult_t> startPuchaseResult;
 
-    public TMP_Text text1;
-    public TMP_Text text2;
-    public TMP_Text text3;
-
     public bool steamPurchase;
     public bool useSteamCloud;
 
@@ -282,8 +278,6 @@ public class SteamIntergration : MonoBehaviour
 
     private void OnSteamInventoryPriceResult(SteamInventoryRequestPricesResult_t result)
     {
-        text3.text = $"Price {result.m_result}";
-
         Debug.Log($"Price {result.m_result}");
     }
 }

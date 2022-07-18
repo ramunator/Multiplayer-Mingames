@@ -6,8 +6,10 @@ public class PlayerMainMenu : MonoBehaviour
 {
     public SelectPlayer currentPlayer;
 
+    public SkinnedMeshRenderer playerMesh;
+
     void Update()
     {
-        transform.GetChild(0).GetChild(0).GetComponent<SkinnedMeshRenderer>().sharedMesh = currentPlayer.currentPlayer.playerObjectPf;
+        playerMesh.sharedMesh = currentPlayer.currentPlayer.playerObjectPf;
     }
 }

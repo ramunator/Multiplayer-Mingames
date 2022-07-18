@@ -111,7 +111,55 @@ public class Console : MonoBehaviour
         if (string.Equals(command.commandName, "remove_item", System.StringComparison.OrdinalIgnoreCase)) { CommandRemoveItem(args); }
         if (string.Equals(command.commandName, "get_all_items", System.StringComparison.OrdinalIgnoreCase)) { CommandGetAllItems(); }
         if (string.Equals(command.commandName, "drop_random_item", System.StringComparison.OrdinalIgnoreCase)) { CommandDropRandomItem(); }
+        if (string.Equals(command.commandName, "set_controller_state", System.StringComparison.OrdinalIgnoreCase)) { CommandSetControllerState(args); }
+    }
 
+    /// <summary>
+    /// <para> Changes the controller state ui </para>
+    /// <para> set_controller_state (ps4, xbox, pc) (0, 1, 2, 10, 20) </para>
+    /// </summary>
+    private void CommandSetControllerState(string[] args)
+    {
+        if (!string.IsNullOrWhiteSpace(args[1]) && !IsDigitsOnly(args[1]))
+        {
+            string[] test = Enum.GetNames(typeof(NavMainMenu.ControllerStateEnum));
+            string stringState = string.Empty;
+            for (int i = 0; i < Enum.GetNames(typeof(NavMainMenu.ControllerStateEnum)).Length; i++)
+            {
+                if(string.Equals(args[1], test[i], StringComparison.OrdinalIgnoreCase))
+                {
+                    stringState = test[i];
+                }
+            }
+            NavMainMenu.ControllerStateEnum result = NavMainMenu.ControllerStateEnum.Pc;
+            foreach (var item in Enum.GetNames(typeof(NavMainMenu.ControllerStateEnum)))
+            {
+                if(!string.IsNullOrWhiteSpace(stringState) && !IsDigitsOnly(stringState)){
+                    if(string.Equals(stringState, item))
+                    {
+                        if (Enum.TryParse(stringState, true, out result))
+                        {
+                            if(args.Length > 2)
+                            {
+                                int parasedArgs2 = int.Parse(args[2]);
+                                NavMainMenu.Instance.controllerState = result;
+                                NavMainMenu.Instance.UpdateUI((uint)parasedArgs2);
+                            }
+                            else
+                            {
+                                NavMainMenu.Instance.controllerState = result;
+                                NavMainMenu.Instance.UpdateUI(0);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    AnswerCommand("<color=red>Error: stringState: " + stringState + "<color=white>");
+                }
+            }
+            AnswerCommand($"<color=white>Changed To {result} UI");
+        }
     }
 
     private void CommandDropRandomItem()

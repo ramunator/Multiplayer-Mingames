@@ -84,16 +84,22 @@ MonoBehaviour:
   onlineScene: Assets/Scenes/Lobby.unity
   transport: {fileID: 6009451572990726998}
   networkAddress: localhost
-  maxConnections: 12
+  maxConnections: 20
   authenticator: {fileID: 0}
   playerPrefab: {fileID: 6383784650712688089, guid: e9ff6c05b9c7bce44b44527f4d971ee1, type: 3}
   autoCreatePlayer: 1
-  playerSpawnMethod: 0
+  playerSpawnMethod: 1
   spawnPrefabs:
   - {fileID: 8435871773491982362, guid: 7b9069b1f4eaaf142ba0def2356180a0, type: 3}
-  - {fileID: 8065622396388561651, guid: e4b1ced332b0fe6479f30046c75b03eb, type: 3}
-  - {fileID: 7576604884984600251, guid: 936b26b1491025e49b355ce7ca89c929, type: 3}
-  GamePlayerPrefab: {fileID: 7576604884984600248, guid: 936b26b1491025e49b355ce7ca89c929, type: 3}
+  - {fileID: 494898315504174126, guid: 8d4ce0a8829ab8d49af63299e9659d60, type: 3}
+  - {fileID: 5118991004485367266, guid: 0f8202d631e23a74189873ad81827db9, type: 3}
+  GamePlayerPrefab: {fileID: -560718540455986917, guid: 0f8202d631e23a74189873ad81827db9, type: 3}
+  chatObject: {fileID: 494898315504174127, guid: 8d4ce0a8829ab8d49af63299e9659d60, type: 3}
+  maps:
+  - Assets/Scenes/Minimap_Hexagon Heat.unity
+  - Assets/Scenes/Minimap_Bomb Tag.unity
+  - Assets/Scenes/Minimap_Laser Game.unity
+  - Assets/Scenes/Minimap_KingOfTheHill.unity
 --- !u!114 &6009451572990726998
 MonoBehaviour:
   m_ObjectHideFlags: 0

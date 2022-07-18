@@ -253,6 +253,8 @@ public class NetworkPlayerController : NetworkBehaviour
     [Client]
     private void Move(Vector2 direction)
     {
+        if (!SceneManager.GetActiveScene().name.StartsWith("Minimap_")) { return; }
+
         if (!isLocalPlayer) { return; }
 
         moveDirection = new Vector3(direction.x, 0, direction.y);
@@ -301,14 +303,7 @@ public class NetworkPlayerController : NetworkBehaviour
 
         walkSFXDelay += Time.deltaTime;
 
-        if (isLocalPlayer && SceneManager.GetActiveScene().name.StartsWith("Minimap_"))
-        {
-            if(GetComponent<CharacterController>().enabled == false)
-            {
-                CheckForEnablePlayerComp();
-            }
-        }
-
+        
         if (moveDirection.magnitude >= 0.1f)
         {
             cam = Camera.main.transform;
@@ -333,7 +328,7 @@ public class NetworkPlayerController : NetworkBehaviour
             moveDirection = Vector3.zero;
         }
 
-        else if (!hasAuthority && SceneManager.GetActiveScene().name.StartsWith("Minimap_"))
+        if (!hasAuthority && SceneManager.GetActiveScene().name.StartsWith("Minimap_"))
         {
             GetComponent<playerObjectController>().playerNameText.enabled = true;
         }
@@ -342,27 +337,36 @@ public class NetworkPlayerController : NetworkBehaviour
             return;
         }
 
-        if (isServer)
+        if (isLocalPlayer && SceneManager.GetActiveScene().name.StartsWith("Minimap_"))
         {
-            RpcSyncPosRot(transform.localPosition, transform.localRotation);
+            if (GetComponent<CharacterController>().enabled == false)
+            {
+                CheckForEnablePlayerComp();
+            }
+            if (isServer)
+            {
+                RpcSyncPosRot(transform.localPosition, transform.localRotation);
+            }
+            else
+            {
+                CmdSyncPosRot(transform.localPosition, transform.localRotation);
+            }
+
+            isGrounded = Physics.CheckSphere(groundCheck.position, .25f, ground);
+
+            if (isGrounded && vel.y < 0)
+            {
+                vel.y = -2f;
+                anim.SetBool("Jump", false);
+            }
+
+            if (!isGrounded)
+                vel.y += gravity * Time.deltaTime;
+
+            controller.Move(vel * Time.deltaTime);
+
         }
-        else
-        {
-            CmdSyncPosRot(transform.localPosition, transform.localRotation);
-        }
 
-        isGrounded = Physics.CheckSphere(groundCheck.position, .25f, ground);
-
-        if (isGrounded && vel.y < 0)
-        {
-            vel.y = -2f;
-            anim.SetBool("Jump", false);
-        }
-
-        if(!isGrounded)
-            vel.y += gravity * Time.deltaTime;
-
-        controller.Move(vel * Time.deltaTime);
 
         if (inventoryObject != null && hasObjectInHand)
         {

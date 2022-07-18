@@ -62,6 +62,7 @@ public class CreateLobby : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(SteamLobbyManager.Instance == null) { return; }
         if(lobbyIndex == 0)
         {
             leftButton.SetActive(false);

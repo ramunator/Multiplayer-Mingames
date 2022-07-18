@@ -8,7 +8,7 @@ using System;
 using System.Linq;
 using UnityEngine.InputSystem;
 
-public class ButtonHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler, IPointerUpHandler, IPointerDownHandler
+public class ButtonHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler, IPointerUpHandler, IPointerDownHandler, IDeselectHandler
 {
 
     [Header("Config")]
@@ -23,6 +23,7 @@ public class ButtonHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public UnityEvent OnPointerHoverEvent;
     public UnityEvent OnPointerExitedEvent;
     public UnityEvent OnButtonClickedEvent;
+    public UnityEvent OnButtonDeClickedEvent;
     public UnityEvent OnPointerUpEvent;
     public UnityEvent OnPointerDownEvent;
 
@@ -52,13 +53,17 @@ public class ButtonHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     }
 
-    public void PlaySFX(AudioSource SFX)
-    {
-        SFX.Play();
-    }
-
     #region ClickButtonFunctions
 
+    public void PlaySFX(AudioSource SFX)
+    {
+        SFX.PlayOneShot(SFX.clip);
+    }
+
+    public void PlayAudioManagerSFX(string sound)
+    {
+        AudioManager.instance.Play(sound);
+    }
 
 
     #endregion
@@ -102,6 +107,30 @@ public class ButtonHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         imageColor.a = newAlpha;
     }
 
+    public void SqueseButton(float time)
+    {
+        StartCoroutine(SqueseButtonCou(time));
+    }
+
+    private IEnumerator SqueseButtonCou(float time)
+    {
+        LeanTween.scale(gameObject, new Vector3(0.975f, 0.975f), time / 2);
+
+        yield return new WaitForSeconds(time / 2);
+
+        LeanTween.scale(gameObject, Vector3.one, time / 2);
+    }
+
+    public void AlphaChangeObjectImage(CanvasGroup image)
+    {
+        LeanTween.alphaCanvas(image, 1, .12f);
+    }
+
+    public void AlphaChangeObjectImageZero(CanvasGroup image)
+    {
+        LeanTween.alphaCanvas(image, 0, .12f);
+    }
+
     public void AddBorder(bool active)
     {
         if (active) {
@@ -111,7 +140,6 @@ public class ButtonHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         {
             OnMouseEnterSprite.gameObject.SetActive(false);
         }
-        
     }
 
     #endregion
@@ -145,5 +173,11 @@ public class ButtonHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     {
         OnPointerUpEvent?.Invoke();
     }
+
+    public void OnDeselect(BaseEventData eventData)
+    {
+        OnButtonDeClickedEvent?.Invoke();
+    }
+
     #endregion
 }

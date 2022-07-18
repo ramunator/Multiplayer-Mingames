@@ -60,7 +60,7 @@ public class playerObjectController : NetworkBehaviour
     {
         Debug.Log("Trying To Get Player Profile");
         int imageId = SteamFriends.GetLargeFriendAvatar((CSteamID)playerSteamId);
-        if (imageId == -1) { Debug.LogError("Player Image Error"); return; }
+        if (imageId == -1) { return; }
         playerIcon.texture = GetSteamImageAsTexture(imageId);
         playerStatsProfilePic.texture = GetSteamImageAsTexture(imageId);
     }
