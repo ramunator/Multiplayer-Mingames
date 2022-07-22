@@ -65,6 +65,7 @@ public class NavMainMenu : MonoBehaviour
         controls.Enable();
         if (SteamManager.Initialized)
         {
+            UpdateUI(0);
             /*InputHandle_t controller1Handle = SteamInput.GetControllerForGamepadIndex(1);
             ESteamInputType inputType = SteamInput.GetInputTypeForHandle(controller1Handle);
             switch (inputType)
@@ -91,7 +92,6 @@ public class NavMainMenu : MonoBehaviour
                     Console.Instance.AnswerCommand("Generic Gamepad Detected"); break;
             }*/
 
-            UpdateUI(0);
         }
     }
 

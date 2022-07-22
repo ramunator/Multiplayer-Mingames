@@ -90,8 +90,6 @@ public class NetworkPlayerController : NetworkBehaviour
         _input = GetComponent<StarterAssetsInputs>();
 
         controller = GetComponent<CharacterController>();
-
-        Application.targetFrameRate = 60;
     }
 
     public static Texture2D GetSteamImageAsTexture2D(int iImage)
@@ -123,6 +121,8 @@ public class NetworkPlayerController : NetworkBehaviour
     {
         if (hasAuthority && SceneManager.GetActiveScene().name.StartsWith("Minimap_"))
         {
+            Console.Instance.AnswerCommand($"<color=white>{SteamFriends.GetPersonaName()} | hasAuthority: {hasAuthority}. isLocalPlayer: {isLocalPlayer}");
+
             PlayerSpawnManager.SearchForSpawns();
             PlayerSpawnManager.PlayerSpawnPos(PlayerSpawnManager.SpawnState.Random, gameObject);
 
@@ -192,7 +192,7 @@ public class NetworkPlayerController : NetworkBehaviour
     [Command()]
     private void CmdJump()
     {
-        if (!isGrounded || !hasAuthority) { return; }
+        if (!isGrounded || !isLocalPlayer) { return; }
 
         anim.SetBool("Jump", true);
 
@@ -217,8 +217,8 @@ public class NetworkPlayerController : NetworkBehaviour
         // if there is an input and camera position is not fixed
         if (_input.look.sqrMagnitude >= _threshold)
         {
-            _cinemachineTargetYaw += _input.look.x * Time.deltaTime;
-            _cinemachineTargetPitch += _input.look.y * Time.deltaTime;
+            _cinemachineTargetYaw += _input.look.x * Time.deltaTime * camMoveSideSpeed;
+            _cinemachineTargetPitch += _input.look.y * Time.deltaTime * camMoveSideSpeed;
         }
 
         // clamp our rotations so our values are limited 360 degrees

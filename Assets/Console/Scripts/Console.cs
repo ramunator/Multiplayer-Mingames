@@ -13,7 +13,10 @@ public class Console : MonoBehaviour
 
     public InputMaster controls;
 
+    public bool dontDestroyOnLoad = false;
+
     public SteamIntergration steamIntergration;
+    public Inventory inventory;
 
     public ConsoleCommand[] consoleCommands;
 
@@ -21,6 +24,7 @@ public class Console : MonoBehaviour
     public TMP_InputField consoleInputField;
 
     public Scrollbar consoleScrollbar;
+
 
     public void EnterCommand(string command)
     {
@@ -46,7 +50,15 @@ public class Console : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;
+        if(Instance == null)
+        {
+            Instance = this;
+            if (dontDestroyOnLoad) { DontDestroyOnLoad(gameObject); }
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
 
         controls = new InputMaster();
 
@@ -195,7 +207,7 @@ public class Console : MonoBehaviour
 
     private void CommandRemoveAllItems(string[] args)
     {
-        steamIntergration.RemoveAllItems();
+        inventory.RemoveAllItems();
         AnswerCommand($"<color=white>Executed Command: <color=green>remove_all_items!");
     }
 

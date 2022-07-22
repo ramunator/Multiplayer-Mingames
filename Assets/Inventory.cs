@@ -5,12 +5,15 @@ using Steamworks;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using UnityEngine.InputSystem;
 
 public class Inventory : MonoBehaviour
 {
     public Transform inventoryItem;
 
     SteamInventoryResult_t _result;
+
+    public static readonly int maxInventorySize = 100;
 
     protected Callback<SteamInventoryResultReady_t> steamInventoryResultReady;
     protected Callback<SteamInventoryRequestPricesResult_t> steamInventoryPriceResult;
@@ -19,11 +22,11 @@ public class Inventory : MonoBehaviour
     public bool steamPurchase;
 
     public SteamItemDetails_t[] m_SteamItemDetails;
-    public SteamItemDef_t[] itemDefItem;
+    public SteamItemDef_t[] inventoryItems = new SteamItemDef_t[maxInventorySize];
 
-    public uint arraySize;
+    public uint inventorySize;
 
-    private Transform inventoryRect;
+    public Transform inventoryRect;
     private Transform content;
 
 
@@ -36,9 +39,6 @@ public class Inventory : MonoBehaviour
 
     private void Start()
     {
-        inventoryRect = transform.Find("Inventory Rect");
-        content = inventoryRect.Find("Content");
-
         if (SteamManager.Initialized)
         {
             SteamAPI.RunCallbacks();
@@ -52,76 +52,140 @@ public class Inventory : MonoBehaviour
             SteamInventory.GetAllItems(out _result);
             SteamInventory.LoadItemDefinitions();
             SteamInventory.RequestPrices();
-
-            StartCoroutine(UpdateSteamInventoryItems());
         }
     }
+
+    private void OnEnable()
+    {
+        GetItems();
+    }
+    
+    public void GetItems()
+    {
+        content = inventoryRect.Find("Content");
+        if (SteamManager.Initialized)
+        {
+            SteamAPI.RunCallbacks();
+            SteamUserStats.StoreStats();
+
+            _result = SteamInventoryResult_t.Invalid;
+            m_SteamItemDetails = null;
+
+            SteamInventory.GetAllItems(out _result);
+            SteamInventory.LoadItemDefinitions();
+            SteamInventory.RequestPrices();
+        }
+        else
+        {
+            Debug.LogError("SteamManager Not Initialized");
+        }
+    }
+
+    private void Update()
+    {
+        if (Keyboard.current.rKey.wasPressedThisFrame)
+        {
+            GetItems();
+        }
+    }
+
     private void OnSteamInventoryResultReady(SteamInventoryResultReady_t result)
     {
         _result = result.m_handle;
         Debug.Log(SteamInventory.GetResultStatus(_result));
+        Debug.Log(m_SteamItemDetails);
 
         if (m_SteamItemDetails == null)
         {
-            bool ret = SteamInventory.GetResultItems(_result, null, ref arraySize);
-            if (ret && arraySize > 0)
+            bool ret = SteamInventory.GetResultItems(_result, null, ref inventorySize);
+            if (ret && inventorySize > 0)
             {
-                m_SteamItemDetails = new SteamItemDetails_t[arraySize];
-                ret = SteamInventory.GetResultItems(_result, m_SteamItemDetails, ref arraySize);
+                m_SteamItemDetails = new SteamItemDetails_t[inventorySize];
+                ret = SteamInventory.GetResultItems(_result, m_SteamItemDetails, ref inventorySize);
             }
             else
             {
-                Console.Instance.AnswerCommand($"<color=red>Error: Failed to load invenotory. Ret: {ret} Array-size: {arraySize}");
+                Debug.Log($"<color=red>Error: Failed to load invenotory. Ret: {ret} Array-size: {inventorySize}");
             }
         }
         SteamInventory.DestroyResult(_result);
     }
 
 
+    public void RemoveAllItems()
+    {
+        m_SteamItemDetails = null;
+        SteamInventory.GetAllItems(out _result);
+
+        StartCoroutine(RemoveAllItemsCou());
+    }
+
+    private IEnumerator RemoveAllItemsCou()
+    {
+        yield return new WaitForSeconds(2f);
+        if (m_SteamItemDetails != null)
+        {
+            for (int i = 0; i < m_SteamItemDetails.Length; i++)
+            {
+                yield return new WaitForSeconds(.1f);
+                inventoryItems[i].m_SteamItemDef = 0;
+                Debug.Log(inventoryItems[i].m_SteamItemDef);
+                SteamInventory.ConsumeItem(out _result, m_SteamItemDetails[i].m_itemId, 1);
+            }
+        }
+        else
+        {
+            yield return null;
+        }
+    }
 
     public IEnumerator UpdateSteamInventoryItems()
     {
-        yield return new WaitForSeconds(2f);
+        m_SteamItemDetails = null;
+        SteamInventory.GetAllItems(out _result);
+
+        yield return new WaitForSeconds(.3f);
 
         //Remove all InventoryItems
         if (content.childCount > 0)
         {
             foreach (Transform item in content)
             {
-                Destroy(item);
+                Destroy(item.gameObject);
             }
         }
 
         //Create the new inventory-items
-        for (int i = 0; i < arraySize; i++)
+        for (int i = 0; i < inventorySize; i++)
         {
-            yield return new WaitForSeconds(.5f);
-            var inventoryItemInstance = Instantiate(inventoryItem, content);
+            yield return new WaitForSeconds(.025f);
 
-            TMP_Text inventoryItemNameText = inventoryItemInstance.Find("Item Name").GetComponent<TMP_Text>();
-            RawImage inventoryItemIcon = inventoryItemInstance.Find("Icon").GetComponent<RawImage>();
+            if(m_SteamItemDetails[i].m_iDefinition.m_SteamItemDef != 0) {
+                var inventoryItemInstance = Instantiate(inventoryItem, content);
 
-            string itemName = string.Empty;
-            string itemIconUrl = string.Empty;
-            uint bufferItemName = 2048;
-            uint bufferItemUrl = 2048;
-            foreach (SteamItemDetails_t itemDetails in m_SteamItemDetails)
-            {
-                Console.Instance.AnswerCommand(itemDetails.m_iDefinition + " | " + itemDefItem[i]);
-                if(itemDetails.m_iDefinition == itemDefItem[i])
-                {
-                    SteamInventory.GetItemDefinitionProperty(itemDefItem[i], "name", out itemName, ref bufferItemName);
-                    SteamInventory.GetItemDefinitionProperty(itemDefItem[i], "icon_url", out itemIconUrl, ref bufferItemUrl);
-                    Debug.Log(itemName + " | " + itemIconUrl);
-                }
+                TMP_Text inventoryItemNameText = inventoryItemInstance.Find("Item Name").GetComponent<TMP_Text>();
+                RawImage inventoryItemIcon = inventoryItemInstance.Find("Icon").GetComponent<RawImage>();
+
+                string itemName = string.Empty;
+                string itemIconUrl = string.Empty;
+                uint bufferItemName = 2048;
+                uint bufferItemUrl = 2048;
+
+                inventoryItems[i] = m_SteamItemDetails[i].m_iDefinition;
+
+                SteamInventory.GetItemDefinitionProperty(inventoryItems[i], "name", out itemName, ref bufferItemName);
+                SteamInventory.GetItemDefinitionProperty(inventoryItems[i], "icon_url", out itemIconUrl, ref bufferItemUrl);
+                Debug.Log(itemName + " | " + itemIconUrl);
+
+                inventoryItemInstance.name = itemName + " Index " + i;
+
+                inventoryItemNameText.text = itemName;
+                UnityWebRequest www = UnityWebRequestTexture.GetTexture(itemIconUrl);
+                yield return www.SendWebRequest();
+
+                Texture myTexture = DownloadHandlerTexture.GetContent(www);
+                inventoryItemIcon.texture = myTexture;
             }
-
-            inventoryItemNameText.text = itemName;
-            UnityWebRequest www = UnityWebRequestTexture.GetTexture(itemIconUrl);
-            yield return www.SendWebRequest();
-
-            Texture myTexture = DownloadHandlerTexture.GetContent(www);
-            inventoryItemIcon.texture = myTexture;
         }
     }
 }

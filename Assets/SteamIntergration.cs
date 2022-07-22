@@ -60,8 +60,6 @@ public class SteamIntergration : MonoBehaviour
             SteamInventory.LoadItemDefinitions();
             SteamInventory.RequestPrices();
         }
-            
-
     }
 
     private void Update()
@@ -124,32 +122,6 @@ public class SteamIntergration : MonoBehaviour
     }
 
 
-    public void RemoveAllItems()
-    {
-        m_SteamItemDetails = null;
-        GetAllItems();
-
-        StartCoroutine(RemoveAllItemsCou());
-    }
-
-    private IEnumerator RemoveAllItemsCou()
-    {
-        yield return new WaitForSeconds(5f);
-        if (m_SteamItemDetails != null)
-        {
-            for (int i = 0; i < m_SteamItemDetails.Length; i++)
-            {
-                yield return new WaitForSeconds(.1f);
-                SteamInventory.ConsumeItem(out _result, m_SteamItemDetails[i].m_itemId, 1);
-            }
-        }
-        else
-        {
-            Console.Instance.AnswerCommand($"<color=red>SteamItemDetails is null! size: ");
-            yield return null;
-        }
-        Console.Instance.AnswerCommand($"Items Left: {arraySize}");
-    }
 
     public void RemoveItem(SteamItemDef_t itemDefId)
     {

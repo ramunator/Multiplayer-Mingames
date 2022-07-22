@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-[CreateAssetMenu(menuName ="Gameplay/Item")]
+[CreateAssetMenu(menuName = "Gameplay/Item")]
 public class Holdable : ScriptableObject
 {
     public enum Type
